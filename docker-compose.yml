@@ -1,0 +1,45 @@
+version: '3.3'
+
+networks:
+  sn_net:
+    driver: bridge
+
+services:
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'db'
+      # So you don't have to use root, but you can if you like
+      MYSQL_USER: 'user'
+      # You can use whatever password you like
+      MYSQL_PASSWORD: 'password'
+      # Password for root access
+      MYSQL_ROOT_PASSWORD: 'password'
+    ports:
+      # <Port exposed> : < MySQL Port running inside container>
+      - '3306:3306'
+    expose:
+      # Opens port 3306 on the container
+      - '3306'
+      # Where our data
+    networks:
+      - sn_net
+
+
+  liquibase:
+    build:
+      context: ./db-migrations/
+    command: update
+    restart: on-failure
+    container_name: liquibase
+    environment:
+      - LIQUIBASE_CHANGELOG=changelog.xml
+      - LIQUIBASE_URL=jdbc:mysql://db:3306
+      - LIQUIBASE_USERNAME=user
+      - LIQUIBASE_PASSWORD=password
+      - LIQUIBASE_OPTS=--defaultSchemaName=db --liquibaseSchemaName=db
+    depends_on:
+      - db
+    networks:
+      - sn_net

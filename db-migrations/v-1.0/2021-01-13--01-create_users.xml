@@ -1,0 +1,32 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+
+    <changeSet id="2021-13-01--users_table_create" author="Kozlov-A">
+        <createTable tableName="users">
+            <column name="id" type="bigint"><constraints primaryKey="true" nullable="false"/></column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="surname" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sex" type="bool"></column>
+            <column name="city" type="varchar(50)"></column>
+            <column name="interests" type="varchar(1000)"></column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2021-13-01--users_table_id_addAutoIncrement" author="Kozlov-A">
+        <addAutoIncrement
+                columnDataType="bigint"
+                columnName="id"
+                incrementBy="1"
+                startWith="1"
+                tableName="users"/>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,16 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+
+    <changeSet id="2021-11-01--user_and_user_table_create" author="Kozlov-A">
+        <createTable tableName="user_and_user">
+            <column name="id_user_1" type="bigint"></column>
+            <column name="id_user_2" type="bigint"></column>
+        </createTable>
+    </changeSet>
+
+
+</databaseChangeLog>
