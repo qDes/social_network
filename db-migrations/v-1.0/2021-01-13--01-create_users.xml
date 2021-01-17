@@ -8,10 +8,16 @@
     <changeSet id="2021-13-01--users_table_create" author="Kozlov-A">
         <createTable tableName="users">
             <column name="id" type="bigint"><constraints primaryKey="true" nullable="false"/></column>
+            <column name="username" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password" type="varchar(70)">
+                <constraints nullable="false"/>
+            </column>
             <column name="name" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="surname" type="varchar(50)">
+            <column name="second_name" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
             <column name="sex" type="bool"></column>

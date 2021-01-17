@@ -5,12 +5,20 @@
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
 
-    <changeSet id="2021-11-01--user_and_user_table_create" author="Kozlov-A">
+    <changeSet id="2021-13-01--user_and_user_table_create" author="Kozlov-A">
         <createTable tableName="user_and_user">
+            <column name="id" type="bigint"><constraints primaryKey="true" nullable="false"/></column>
             <column name="id_user_1" type="bigint"></column>
             <column name="id_user_2" type="bigint"></column>
         </createTable>
     </changeSet>
 
-
+    <changeSet id="2021-13-01--user_and_user_table_id_addAutoIncrement" author="Kozlov-A">
+        <addAutoIncrement
+                columnDataType="bigint"
+                columnName="id"
+                incrementBy="1"
+                startWith="1"
+                tableName="user_and_user"/>
+    </changeSet>
 </databaseChangeLog>
