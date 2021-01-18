@@ -1,18 +1,31 @@
 package main
 
 import (
+	"log"
 	"net/http"
 	"social_network/internal/controller"
+	"time"
+
+	"github.com/gorilla/mux"
 )
 
 func main() {
-	http.HandleFunc("/account", controller.IndexLogin)
-	http.HandleFunc("/account/index", controller.IndexLogin)
-	http.HandleFunc("/account/login", controller.Login)
-	http.HandleFunc("/account/welcome", controller.UserPage)
-	http.HandleFunc("/account/logout", controller.Logout)
-	http.HandleFunc("/account/signupindex", controller.SignUpIndex)
-	http.HandleFunc("/account/signup", controller.SignUp)
+	r := mux.NewRouter()
 
-	http.ListenAndServe(":3000", nil)
+	r.HandleFunc("/", controller.Index)
+	r.HandleFunc("/account/index", controller.IndexLogin)
+	r.HandleFunc("/account/login", controller.Login)
+	r.HandleFunc("/account/page/{username}", controller.UserPage)
+	r.HandleFunc("/account/logout", controller.Logout)
+	r.HandleFunc("/account/signupindex", controller.SignUpIndex)
+	r.HandleFunc("/account/signup", controller.SignUp)
+	r.HandleFunc("/account/add_friend", controller.AddFriend)
+
+	srv := &http.Server{
+		Handler: r,
+		Addr:    "0.0.0.0:3000",
+		WriteTimeout: 15 * time.Second,
+		ReadTimeout:  15 * time.Second,
+	}
+	log.Fatal(srv.ListenAndServe())
 }

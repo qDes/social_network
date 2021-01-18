@@ -18,7 +18,7 @@ VALUES (?, ?, ?, ?, ?, ?, ?);`
 
 func main() {
 
-	svc := config.GetDB()
+	svc := config.GetSvc()
 
 	err := svc.DB.Ping()
 	if err != nil {

@@ -9,7 +9,7 @@ type Service struct {
 	DB *sqlx.DB
 }
 
-func GetDB() *Service {
+func GetSvc() *Service {
 	// TODO: replace with viper
 	dbDriver := "mysql"
 	dbName := "db"

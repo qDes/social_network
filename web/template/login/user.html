@@ -12,6 +12,17 @@
         <h3>Sex: {{.sex}}</h3>
         <h3>City: {{.city}}</h3>
         <h3>Interests: {{.interests}}</h3>
+        <br>
+        <h3>Friends:</h3>
+        <br>
+        {{range $element := .urls}} http://{{$element}} <br> {{end}}
+
+        {{if .add}}     <form action="/account/add_friend">
+            <input type="hidden" value="{{.username}}" name="username">
+            <input type="hidden" value="{{.session_user}}" name="user_session">
+            <input type="submit" value="Add" />
+        </form>
+        {{end}}
 
         <a href="/account/logout">Logout</a>
 
