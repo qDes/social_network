@@ -16,7 +16,7 @@ func GetSvc() *Service {
 	dbUser := "user"
 	dbPass := "password"
 
-	db, err := sqlx.Open(dbDriver, dbUser+":"+dbPass+"@/"+dbName)
+	db, err := sqlx.Open(dbDriver, dbUser+":"+dbPass+"@"+"(db:3306)"+"/"+dbName)
 
 	if err != nil {
 		panic(err)
