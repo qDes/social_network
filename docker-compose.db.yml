@@ -1,27 +1,10 @@
-version: "3.6"
+version: '3.3'
 
 networks:
   sn_net:
     driver: bridge
 
-
 services:
-  goservice:
-    build: "."
-    ports:
-      - '3000:3000'
-    networks:
-      - sn_net
-
-  nginx:
-    build: "./nginx"
-    ports:
-      - "80:80"
-    depends_on:
-      - "goservice"
-    networks:
-      - sn_net
-
   db:
     image: mysql:5.7
     restart: always
