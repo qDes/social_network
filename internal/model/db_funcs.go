@@ -18,6 +18,14 @@ func InsertUser(db *sqlx.DB, username, password, name, secondName, city, interes
 
 }
 
+func AddFriend(db *sqlx.DB, firstUser, secondUser string) error {
+	id1 := getUserID(db, firstUser)
+	id2 := getUserID(db, secondUser)
+	query := `INSERT INTO user_and_user (id_user_1, id_user_2) VALUES (?,?);`
+	_, err := db.Query(query, id1, id2)
+	return err
+}
+
 func GetPass(db *sqlx.DB, username string) (string, error) {
 	query := `SELECT password FROM users WHERE username=?;`
 
@@ -54,13 +62,34 @@ func GetUser(db *sqlx.DB, username string) (User, error) {
 
 }
 
-func GetFriends(db *sqlx.DB, username string) [] string {
+func GetFriends(db *sqlx.DB, username string) []string {
 	userID := getUserID(db, username)
 	friendsIDs := getFriendsIDs(db, userID)
 	return getFriendsUsernames(db, friendsIDs)
 }
 
-func getUserID(db *sqlx.DB, username string) int64{
+func CheckFriends(db *sqlx.DB, user1 string, user2 string) bool {
+	var id int
+	user1ID := getUserID(db, user1)
+	user2ID := getUserID(db, user2)
+	query := `
+	SELECT id FROM user_and_user WHERE (id_user_1, id_user_2) = (?, ?) 
+		OR (id_user_1, id_user_2) = (?, ?);
+	`
+	row := db.QueryRow(query, user1ID, user2ID, user2ID, user1ID)
+	switch err := row.Scan(&id); err {
+	case sql.ErrNoRows:
+		fmt.Println("No rows were returned!")
+		return false
+	case nil:
+		return true
+
+	}
+
+	return false
+}
+
+func getUserID(db *sqlx.DB, username string) int64 {
 	var userID int64
 
 	query := `SELECT id FROM users WHERE username=?;`
@@ -81,6 +110,9 @@ func getFriendsUsernames(db *sqlx.DB, ids []int64) []string {
 	args := make([]interface{}, len(ids))
 	for i, id := range ids {
 		args[i] = id
+	}
+	if len(ids) == 0 {
+		return []string{}
 	}
 	query := `SELECT username FROM users WHERE id in (?` + strings.Repeat(",?", len(args)-1) + `);`
 	rows, err := db.Query(query, args...)

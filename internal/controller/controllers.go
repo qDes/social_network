@@ -22,7 +22,7 @@ func Index(resp http.ResponseWriter, req *http.Request) {
 	session, _ := store.Get(req, "mysession")
 	username := session.Values["username"]
 	if username != nil {
-		http.Redirect(resp, req, "/account/page/"+fmt.Sprintf("%v",username), http.StatusSeeOther)
+		http.Redirect(resp, req, "/account/page/"+fmt.Sprintf("%v", username), http.StatusSeeOther)
 	}
 
 	tmp, _ := template.ParseFiles("web/template/index.html")
@@ -80,18 +80,21 @@ func UserPage(resp http.ResponseWriter, req *http.Request) {
 	} else {
 		sex = "M"
 	}
-	if username != fmt.Sprintf("%v", sessionUser) {
+	// check add button rendering
+	if (username != fmt.Sprintf("%v", sessionUser)) &&
+		!(model.CheckFriends(svc.DB, username, fmt.Sprintf("%v", sessionUser))) {
 		add = true
 	}
+
 	data := map[string]interface{}{
-		"username":    username,
-		"name":        user.Name,
-		"second_name": user.SecondName,
-		"sex":         sex,
-		"city":        user.City,
-		"interests":   user.Interests,
-		"urls":        model.GetFriends(svc.DB, username),
-		"add": add,
+		"username":     username,
+		"name":         user.Name,
+		"second_name":  user.SecondName,
+		"sex":          sex,
+		"city":         user.City,
+		"interests":    user.Interests,
+		"urls":         model.GetFriends(svc.DB, username),
+		"add":          add,
 		"session_user": sessionUser,
 	}
 	tmp, _ := template.ParseFiles("web/template/login/user.html")
@@ -99,11 +102,12 @@ func UserPage(resp http.ResponseWriter, req *http.Request) {
 
 }
 
-func AddFriend(resp http.ResponseWriter, req *http.Request)  {
+func AddFriend(resp http.ResponseWriter, req *http.Request) {
 	req.ParseForm()
 	username := req.Form.Get("username")
 	sessionUser := req.Form.Get("user_session")
-	fmt.Println(username, sessionUser)
+	_ = model.AddFriend(svc.DB, username, sessionUser)
+	http.Redirect(resp, req, "/", http.StatusSeeOther)
 }
 
 func Logout(resp http.ResponseWriter, req *http.Request) {
