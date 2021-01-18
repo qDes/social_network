@@ -6,7 +6,7 @@ type User struct {
 	Password   string
 	Name       string
 	SecondName string
-	Sex        bool
+	Sex        []byte
 	City       string
 	Interests  string
 }

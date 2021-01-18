@@ -24,10 +24,10 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	username := "hell"
+	ids := []int{2,3}
 	//password := "$2a$04$9qdIYYSKFWlnXpCfaa9Ll.kFsLt4hZ4bECwI/XGCW98h0iyTEsOoG"
 
-	res, _ := model.GetUser(svc.DB, username)
+	res := model.GetFriendsUsernames(svc.DB, ids)
 	fmt.Println(res)
 	/*
 	res, err := svc.DB.Query(query1, username)

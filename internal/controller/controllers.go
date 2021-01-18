@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"bytes"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -18,6 +19,12 @@ var (
 )
 
 func Index(resp http.ResponseWriter, req *http.Request) {
+	session, _ := store.Get(req, "mysession")
+	username := session.Values["username"]
+	if username != nil {
+		http.Redirect(resp, req, "/account/page/"+fmt.Sprintf("%v",username), http.StatusSeeOther)
+	}
+
 	tmp, _ := template.ParseFiles("web/template/index.html")
 	tmp.Execute(resp, nil)
 }
@@ -61,11 +68,14 @@ func UserPage(resp http.ResponseWriter, req *http.Request) {
 	session, _ := store.Get(req, "mysession")
 	sessionUser := session.Values["username"]
 	if sessionUser == nil {
-		http.Redirect(resp, req, "/account/", http.StatusSeeOther)
+		http.Redirect(resp, req, "/", http.StatusSeeOther)
 	}
 
 	user, _ := model.GetUser(svc.DB, fmt.Sprintf("%v", username))
-	if user.Sex {
+	if user.ID == 0 {
+		http.Redirect(resp, req, "/", http.StatusSeeOther)
+	}
+	if bytes.Compare(user.Sex, []byte{1}) == 0 {
 		sex = "F"
 	} else {
 		sex = "M"
@@ -80,7 +90,7 @@ func UserPage(resp http.ResponseWriter, req *http.Request) {
 		"sex":         sex,
 		"city":        user.City,
 		"interests":   user.Interests,
-		"urls":        []string{"sasi", "pes"},
+		"urls":        model.GetFriends(svc.DB, username),
 		"add": add,
 		"session_user": sessionUser,
 	}

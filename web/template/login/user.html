@@ -15,7 +15,10 @@
         <br>
         <h3>Friends:</h3>
         <br>
-        {{range $element := .urls}} http://{{$element}} <br> {{end}}
+        {{range $element := .urls}}
+        <a href="/account/page/{{$element}}">...</a>
+        <br>
+        {{end}}
 
         {{if .add}}     <form action="/account/add_friend">
             <input type="hidden" value="{{.username}}" name="username">
