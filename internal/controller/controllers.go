@@ -142,3 +142,16 @@ func SignUp(resp http.ResponseWriter, req *http.Request) {
 	fmt.Println(err)
 	http.Redirect(resp, req, "/account/index", http.StatusSeeOther)
 }
+
+func SearchUser(resp http.ResponseWriter, req *http.Request) {
+	firstName, ok := req.URL.Query()["firstname"]
+	if !ok {
+		fmt.Println("Url Param 'firstname' is missing")
+	}
+
+	secondName, ok := req.URL.Query()["secondname"]
+	if !ok {
+		fmt.Println("Url Param 'secondname' is missing")
+	}
+	fmt.Println(firstName, secondName)
+}
