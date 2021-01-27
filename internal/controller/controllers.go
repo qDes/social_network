@@ -2,6 +2,7 @@ package controller
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -25,8 +26,10 @@ func Index(resp http.ResponseWriter, req *http.Request) {
 		http.Redirect(resp, req, "/account/page/"+fmt.Sprintf("%v", username), http.StatusSeeOther)
 	}
 
-	tmp, _ := template.ParseFiles("web/template/index.html")
+	tmp, _ := template.ParseFiles("web/template/test/base.html", "web/template/test/content.html")
 	tmp.Execute(resp, nil)
+	//tmp, _ := template.ParseFiles("web/template/index.html")
+	//tmp.Execute(resp, nil)
 }
 
 func IndexLogin(resp http.ResponseWriter, req *http.Request) {
@@ -154,4 +157,13 @@ func SearchUser(resp http.ResponseWriter, req *http.Request) {
 		fmt.Println("Url Param 'secondname' is missing")
 	}
 	fmt.Println(firstName, secondName)
+
+	users := model.NameSearch(svc.DB, firstName[0], secondName[0])
+
+	js, err := json.Marshal(users)
+	if err != nil {
+		fmt.Println("Users marshalling error")
+	}
+
+	resp.Write(js)
 }

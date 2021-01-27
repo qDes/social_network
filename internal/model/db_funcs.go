@@ -68,6 +68,28 @@ func GetFriends(db *sqlx.DB, username string) []string {
 	return getFriendsUsernames(db, friendsIDs)
 }
 
+func NameSearch(db *sqlx.DB, firstName, secondName string) []User {
+	var users []User
+	query := `SELECT id, username 
+				FROM users WHERE name LIKE ? and second_name LIKE ?;`
+	rows, err := db.Query(query, firstName, secondName)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var user User
+		if err := rows.Scan(&user.ID, &user.Username); err != nil {
+			// Check for a scan error.
+			// Query rows will be closed with defer.
+			log.Fatal(err)
+		}
+		users = append(users, user)
+	}
+
+	return users
+}
+
 func CheckFriends(db *sqlx.DB, user1 string, user2 string) bool {
 	var id int
 	user1ID := getUserID(db, user1)
