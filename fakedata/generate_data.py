@@ -12,10 +12,10 @@ if __name__ == "__main__":
     with open("fake_users.csv", mode='w') as my_file:
         user_writer = csv.writer(my_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
-        for i in range(0, 30):
+        for i in range(0, 1_000_000):
             a = person.full_name(gender=Gender.MALE)
             id_ = i + 1
-            username = f"user{id_}"
+            username = f"fake{id_}"
 
             name, second_name = a.split()
             print(username, password, name, second_name)
