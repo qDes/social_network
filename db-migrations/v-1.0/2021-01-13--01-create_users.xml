@@ -14,7 +14,7 @@
             <column name="password" type="varchar(70)">
                 <constraints nullable="false"/>
             </column>
-            <column name="name" type="varchar(50)">
+            <column name="first_name" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
             <column name="second_name" type="varchar(50)">
@@ -33,6 +33,17 @@
                 incrementBy="1"
                 startWith="1"
                 tableName="users"/>
+    </changeSet>
+
+
+    <changeSet id="2021-13-01--users_table_user_addUniqueConstraint" author="Kozlov-A">
+        <addUniqueConstraint
+                columnNames="username"
+                constraintName="users_username_unique"
+                deferrable="false"
+                initiallyDeferred="false"
+                tableName="users"/>
+
     </changeSet>
 
 </databaseChangeLog>
