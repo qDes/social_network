@@ -20,7 +20,8 @@ func main() {
 	r.HandleFunc("/account/signupindex", controller.SignUpIndex)
 	r.HandleFunc("/account/signup", controller.SignUp)
 	r.HandleFunc("/account/add_friend", controller.AddFriend)
-	r.HandleFunc("/account/search", controller.SearchUser)
+	r.HandleFunc("/account/search_user", controller.SearchUser)
+	r.HandleFunc("/account/search", controller.Search)
 
 	srv := &http.Server{
 		Handler: r,

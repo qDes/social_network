@@ -166,3 +166,11 @@ func SearchUser(resp http.ResponseWriter, req *http.Request) {
 
 	resp.Write(js)
 }
+
+func Search(resp http.ResponseWriter, req *http.Request) {
+	req.ParseForm()
+	searchStr := req.Form.Get("search_string")
+	fmt.Println(searchStr)
+	//tmp, err := template.ParseFiles("web/template/signup/index.html")
+	//tmp.Execute(resp, err)
+}

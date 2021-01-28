@@ -1,1 +1,1 @@
-http://0.0.0.0:3000/account/search?firstname=erer&secondname=rere
+http://0.0.0.0:3000/account/search_user?firstname=erer&secondname=rere
