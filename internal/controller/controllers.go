@@ -170,7 +170,12 @@ func SearchUser(resp http.ResponseWriter, req *http.Request) {
 func Search(resp http.ResponseWriter, req *http.Request) {
 	req.ParseForm()
 	searchStr := req.Form.Get("search_string")
-	fmt.Println(searchStr)
-	//tmp, err := template.ParseFiles("web/template/signup/index.html")
-	//tmp.Execute(resp, err)
+	userNames := model.SearchAll(svc.DB, searchStr)
+	fmt.Println(userNames)
+	data := map[string]interface{}{
+		"usernames": userNames,
+	}
+	tmp, _ := template.ParseFiles("web/template/search/results.html")
+	tmp.Execute(resp, data)
+
 }

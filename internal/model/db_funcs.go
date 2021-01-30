@@ -111,6 +111,29 @@ func CheckFriends(db *sqlx.DB, user1 string, user2 string) bool {
 	return false
 }
 
+func SearchAll(db *sqlx.DB, search string) []string {
+	usernames := []string{}
+	query := `SELECT username 
+				FROM users WHERE first_name LIKE ? OR second_name LIKE ? 
+				              OR city LIKE ? OR interests LIKE ?
+							  OR username LIKE ?;`
+	rows, err := db.Query(query, search+"%", search+"%", "%"+search+"%", "%"+search+"%", search+"%")
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var username string
+		if err := rows.Scan(&username); err != nil {
+			// Check for a scan error.
+			// Query rows will be closed with defer.
+			log.Fatal(err)
+		}
+		usernames = append(usernames, username)
+	}
+	return usernames
+}
+
 func getUserID(db *sqlx.DB, username string) int64 {
 	var userID int64
 
