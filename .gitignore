@@ -1,3 +1,4 @@
 .idea
 */env/*
 fakedata/fake_users.csv
+*/.ipynb_checkpoints/

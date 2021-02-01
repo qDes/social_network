@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
@@ -28,6 +29,9 @@ func GetSvc() *Service {
 	if err != nil {
 		fmt.Println(err)
 	}
+	db.SetMaxOpenConns(1500)
+	db.SetMaxIdleConns(1500)
+	db.SetConnMaxLifetime(time.Duration(time.Duration.Seconds(1)))
 	return &Service{
 		DB: db,
 	}

@@ -155,7 +155,7 @@ func SearchUser(resp http.ResponseWriter, req *http.Request) {
 	if !ok {
 		fmt.Println("Url Param 'secondname' is missing")
 	}
-	fmt.Println(firstName, secondName)
+	//fmt.Println(firstName, secondName)
 
 	users := model.NameSearch(svc.DB, firstName[0], secondName[0])
 

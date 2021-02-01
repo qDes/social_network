@@ -1,0 +1,311 @@
+## Query plan
+EXPLAIN format=json SELECT id, username FROM users WHERE first_name LIKE 'Bobby' and second_name LIKE 'Chase' ORDER BY id;
+
+# no index testing
+```json
+{
+  "query_block": {
+    "select_id": 1,
+    "cost_info": {
+      "query_cost": "206040.60"
+    },
+    "ordering_operation": {
+      "using_filesort": false,
+      "table": {
+        "table_name": "users",
+        "access_type": "index",
+        "key": "PRIMARY",
+        "used_key_parts": [
+          "id"
+        ],
+        "key_length": "8",
+        "rows_examined_per_scan": 992553,
+        "rows_produced_per_join": 12251,
+        "filtered": "1.23",
+        "cost_info": {
+          "read_cost": "203590.34",
+          "eval_cost": "2450.26",
+          "prefix_cost": "206040.60",
+          "data_read_per_join": "15M"
+        },
+        "used_columns": [
+          "id",
+          "username",
+          "first_name",
+          "second_name"
+        ],
+        "attached_condition": "((`db`.`users`.`first_name` like 'Bobby') and (`db`.`users`.`second_name` like 'Chase'))"
+      }
+    }
+  }
+}
+
+```
+
+## Running 10s test @ http://0.0.0.0:3000/account/search_user?firstname=Bobby&secondname=Chase
+1 threads and 1 connections
+Thread Stats   Avg      Stdev     Max   +/- Stdev
+Latency   397.78ms   57.52ms 594.93ms   84.00%
+Req/Sec     2.08      0.64     3.00     60.00%
+Latency Distribution
+50%  377.30ms
+75%  398.75ms
+90%  467.42ms
+99%  594.93ms
+25 requests in 10.05s, 5.62KB read
+Requests/sec:      2.49
+Transfer/sec:     572.18B
+## Running 10s test @ http://0.0.0.0:3000/account/search_user?firstname=Bobby&secondname=Chase
+1 threads and 10 connections
+Thread Stats   Avg      Stdev     Max   +/- Stdev
+Latency   697.02ms  127.65ms   1.04s    72.66%
+Req/Sec    15.56      9.48    50.00     75.76%
+Latency Distribution
+50%  694.74ms
+75%  766.57ms
+90%  857.51ms
+99%  993.02ms
+139 requests in 10.09s, 31.22KB read
+Requests/sec:     13.77
+Transfer/sec:      3.09KB
+
+## Running 2m test @ http://0.0.0.0:3000/account/search_user?firstname=Bobby&secondname=Chase
+1 threads and 100 connections
+Thread Stats   Avg      Stdev     Max   +/- Stdev
+Latency     7.92s   845.48ms  10.90s    73.17%
+Req/Sec    36.38     25.83   151.00     64.84%
+Latency Distribution
+50%    7.73s
+75%    8.30s
+90%    9.11s
+99%   10.45s
+1200 requests in 1.67m, 269.53KB read
+Requests/sec:     12.00
+Transfer/sec:      2.69KB
+
+## Running 5m test @ http://0.0.0.0:3000/account/search_user?firstname=Bobby&secondname=Chase
+1 threads and 1000 connections
+Thread Stats   Avg      Stdev     Max   +/- Stdev
+Latency     0.00us    0.00us   0.00us     nan%
+Req/Sec     0.00      0.00     0.00       nan%
+Latency Distribution
+50%    0.00us
+75%    0.00us
+90%    0.00us
+99%    0.00us
+0 requests in 5.00m, 0.00B read
+Socket errors: connect 0, read 3980, write 16, timeout 0
+Requests/sec:      0.00
+Transfer/sec:       0.00B
+
+
+## index on first_name + index on second_name
+create index users_first_name_index
+on users (first_name);
+create index users_second_name_index
+on users (second_name);
+```json
+{
+  "query_block": {
+    "select_id": 1,
+    "cost_info": {
+      "query_cost": "16.35"
+    },
+    "ordering_operation": {
+      "using_filesort": true,
+      "cost_info": {
+        "sort_cost": "1.00"
+      },
+      "table": {
+        "table_name": "users",
+        "access_type": "index_merge",
+        "possible_keys": [
+          "users_first_name_index",
+          "users_second_name_index"
+        ],
+        "key": "intersect(users_first_name_index,users_second_name_index)",
+        "key_length": "52,52",
+        "rows_examined_per_scan": 1,
+        "rows_produced_per_join": 1,
+        "filtered": "100.00",
+        "cost_info": {
+          "read_cost": "15.15",
+          "eval_cost": "0.20",
+          "prefix_cost": "15.35",
+          "data_read_per_join": "1K"
+        },
+        "used_columns": [
+          "id",
+          "username",
+          "first_name",
+          "second_name"
+        ],
+        "attached_condition": "((`db`.`users`.`first_name` like 'Bobby') and (`db`.`users`.`second_name` like 'Chase'))"
+      }
+    }
+  }
+}
+```
+## Running 10s test @ http://0.0.0.0:3000/account/search_user?firstname=Bobby&secondname=Chase
+1 threads and 1 connections
+Thread Stats   Avg      Stdev     Max   +/- Stdev
+Latency    31.99ms  114.75ms 776.98ms   94.31%
+Req/Sec   198.41     91.17   390.00     69.15%
+Latency Distribution
+50%    4.69ms
+75%    7.04ms
+90%   10.85ms
+99%  669.34ms
+1863 requests in 10.03s, 418.45KB read
+Requests/sec:    185.77
+Transfer/sec:     41.73KB
+
+## Running 10s test @ http://0.0.0.0:3000/account/search_user?firstname=Bobby&secondname=Chase
+1 threads and 10 connections
+Thread Stats   Avg      Stdev     Max   +/- Stdev
+Latency     8.94ms    4.92ms  47.48ms   82.65%
+Req/Sec     1.17k   185.06     1.41k    71.00%
+Latency Distribution
+50%    7.46ms
+75%   10.87ms
+90%   15.31ms
+99%   27.03ms
+11607 requests in 10.01s, 2.55MB read
+Requests/sec:   1160.09
+Transfer/sec:    260.57KB
+
+
+## Running 10s test @ http://0.0.0.0:3000/account/search_user?firstname=Bobby&secondname=Chase
+1 threads and 100 connections
+Thread Stats   Avg      Stdev     Max   +/- Stdev
+Latency    83.13ms   48.99ms 427.37ms   71.25%
+Req/Sec     1.24k   217.16     1.63k    67.00%
+Latency Distribution
+50%   76.89ms
+75%  108.95ms
+90%  146.00ms
+99%  237.62ms
+12324 requests in 10.02s, 2.70MB read
+Requests/sec:   1230.51
+Transfer/sec:    276.38KB
+
+
+## Running 2m test @ http://0.0.0.0:3000/account/search_user?firstname=Bobby&secondname=Chase
+1 threads and 1000 connections
+Thread Stats   Avg      Stdev     Max   +/- Stdev
+Latency   905.17ms    1.24s   14.82s    89.01%
+Req/Sec     1.12k   277.72     2.08k    73.94%
+Latency Distribution
+50%  470.65ms
+75%    1.32s
+90%    2.24s
+99%    5.77s
+110909 requests in 1.67m, 24.33MB read
+Socket errors: connect 0, read 1353, write 32, timeout 0
+Requests/sec:   1108.72
+Transfer/sec:    249.03KB
+
+## index on (first_name, second_name)
+create index users_first_name_second_name_index
+on users (first_name, second_name);
+```json
+{
+  "query_block": {
+    "select_id": 1,
+    "cost_info": {
+      "query_cost": "3.41"
+    },
+    "ordering_operation": {
+      "using_filesort": true,
+      "cost_info": {
+        "sort_cost": "1.00"
+      },
+      "table": {
+        "table_name": "users",
+        "access_type": "range",
+        "possible_keys": [
+          "users_first_name_second_name_index"
+        ],
+        "key": "users_first_name_second_name_index",
+        "used_key_parts": [
+          "first_name",
+          "second_name"
+        ],
+        "key_length": "104",
+        "rows_examined_per_scan": 1,
+        "rows_produced_per_join": 1,
+        "filtered": "100.00",
+        "index_condition": "((`db`.`users`.`first_name` like 'Bobby') and (`db`.`users`.`second_name` like 'Chase'))",
+        "cost_info": {
+          "read_cost": "2.21",
+          "eval_cost": "0.20",
+          "prefix_cost": "2.41",
+          "data_read_per_join": "1K"
+        },
+        "used_columns": [
+          "id",
+          "username",
+          "first_name",
+          "second_name"
+        ]
+      }
+    }
+  }
+}
+
+```
+## Running 10s test @ http://0.0.0.0:3000/account/search_user?firstname=Bobby&secondname=Chase
+1 threads and 1 connections
+Thread Stats   Avg      Stdev     Max   +/- Stdev
+Latency     2.51ms    1.47ms  32.29ms   94.60%
+Req/Sec   417.54     83.04   520.00     79.00%
+Latency Distribution
+50%    2.15ms
+75%    2.54ms
+90%    3.27ms
+99%    7.41ms
+4161 requests in 10.01s, 0.91MB read
+Requests/sec:    415.62
+Transfer/sec:     93.35KB
+
+## Running 10s test @ http://0.0.0.0:3000/account/search_user?firstname=Bobby&secondname=Chase
+1 threads and 10 connections
+Thread Stats   Avg      Stdev     Max   +/- Stdev
+Latency     5.78ms    2.72ms  35.00ms   86.47%
+Req/Sec     1.78k   228.69     2.28k    72.00%
+Latency Distribution
+50%    4.98ms
+75%    6.50ms
+90%    8.94ms
+99%   16.52ms
+17749 requests in 10.01s, 3.89MB read
+Requests/sec:   1773.69
+Transfer/sec:    398.39KB
+
+## Running 10s test @ http://0.0.0.0:3000/account/search_user?firstname=Bobby&secondname=Chase
+1 threads and 100 connections
+Thread Stats   Avg      Stdev     Max   +/- Stdev
+Latency    55.79ms   67.84ms 825.98ms   88.64%
+Req/Sec     2.55k   487.88     3.93k    68.00%
+Latency Distribution
+50%   31.40ms
+75%   74.07ms
+90%  132.35ms
+99%  327.92ms
+25404 requests in 10.02s, 5.57MB read
+Requests/sec:   2535.05
+Transfer/sec:    569.40KB
+
+## Running 10s test @ http://0.0.0.0:3000/account/search_user?firstname=Bobby&secondname=Chase
+1 threads and 1000 connections
+Thread Stats   Avg      Stdev     Max   +/- Stdev
+Latency   379.41ms  322.71ms   4.62s    83.60%
+Req/Sec     2.83k     0.91k    5.19k    78.57%
+Latency Distribution
+50%  323.86ms
+75%  492.42ms
+90%  703.58ms
+99%    1.45s
+27586 requests in 10.02s, 6.05MB read
+Requests/sec:   2753.27
+Transfer/sec:    618.41KB
