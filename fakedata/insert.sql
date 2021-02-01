@@ -1,0 +1,1 @@
+LOAD DATA LOCAL INFILE '/Users/a18351639/go/src/social_network/fakedata/fake_users.csv' INTO TABLE users  FIELDS TERMINATED BY ',' LINES TERMINATED BY '\r\n' (username, password, first_name, second_name);

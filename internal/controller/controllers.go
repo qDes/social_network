@@ -2,6 +2,7 @@ package controller
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -25,6 +26,8 @@ func Index(resp http.ResponseWriter, req *http.Request) {
 		http.Redirect(resp, req, "/account/page/"+fmt.Sprintf("%v", username), http.StatusSeeOther)
 	}
 
+	//tmp, _ := template.ParseFiles("web/template/test/base.html", "web/template/test/content.html")
+	//tmp.Execute(resp, nil)
 	tmp, _ := template.ParseFiles("web/template/index.html")
 	tmp.Execute(resp, nil)
 }
@@ -88,7 +91,7 @@ func UserPage(resp http.ResponseWriter, req *http.Request) {
 
 	data := map[string]interface{}{
 		"username":     username,
-		"name":         user.Name,
+		"name":         user.FirstName,
 		"second_name":  user.SecondName,
 		"sex":          sex,
 		"city":         user.City,
@@ -118,13 +121,12 @@ func Logout(resp http.ResponseWriter, req *http.Request) {
 }
 
 func SignUpIndex(resp http.ResponseWriter, req *http.Request) {
-	tmp, _ := template.ParseFiles("web/template/signup/index.html")
-	tmp.Execute(resp, nil)
+	tmp, err := template.ParseFiles("web/template/signup/index.html")
+	tmp.Execute(resp, err)
 }
 
 func SignUp(resp http.ResponseWriter, req *http.Request) {
 	req.ParseForm()
-	// TODO: check unique username or db constrains
 	username := req.Form.Get("username")
 	password := getHash([]byte(req.Form.Get("password")))
 	name := req.Form.Get("name")
@@ -141,4 +143,39 @@ func SignUp(resp http.ResponseWriter, req *http.Request) {
 	err := model.InsertUser(svc.DB, username, password, name, secondName, city, interests, sex)
 	fmt.Println(err)
 	http.Redirect(resp, req, "/account/index", http.StatusSeeOther)
+}
+
+func SearchUser(resp http.ResponseWriter, req *http.Request) {
+	firstName, ok := req.URL.Query()["firstname"]
+	if !ok {
+		fmt.Println("Url Param 'firstname' is missing")
+	}
+
+	secondName, ok := req.URL.Query()["secondname"]
+	if !ok {
+		fmt.Println("Url Param 'secondname' is missing")
+	}
+	//fmt.Println(firstName, secondName)
+
+	users := model.NameSearch(svc.DB, firstName[0], secondName[0])
+
+	js, err := json.Marshal(users)
+	if err != nil {
+		fmt.Println("Users marshalling error")
+	}
+
+	resp.Write(js)
+}
+
+func Search(resp http.ResponseWriter, req *http.Request) {
+	req.ParseForm()
+	searchStr := req.Form.Get("search_string")
+	userNames := model.SearchAll(svc.DB, searchStr)
+	fmt.Println(userNames)
+	data := map[string]interface{}{
+		"usernames": userNames,
+	}
+	tmp, _ := template.ParseFiles("web/template/search/results.html")
+	tmp.Execute(resp, data)
+
 }

@@ -1,0 +1,15 @@
+{{template "base" .}}
+
+{{define "title"}}FakeNet{{end}}
+
+{{define "content"}}
+    <h2>FakeNet</h2>
+
+    <form action="/account/signupindex">
+        <input type="submit" value="Sign Up" />
+    </form>
+    <form action="/account/index">
+        <input type="submit" value="Login" />
+    </form>
+
+{{end}}
