@@ -29,6 +29,16 @@ func GetSvc() *Service {
 	if err != nil {
 		fmt.Println(err)
 	}
+	db, err = sqlx.Open(dbDriver, dbUser+":"+dbPass+"@"+"(db:3306)"+"/"+dbName)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	err = db.Ping()
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	db.SetMaxOpenConns(1500)
 	db.SetMaxIdleConns(1500)
 	db.SetConnMaxLifetime(time.Duration(time.Duration.Seconds(1)))
