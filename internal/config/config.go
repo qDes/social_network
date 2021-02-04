@@ -29,7 +29,7 @@ func GetSvc() *Service {
 	if err != nil {
 		fmt.Println(err)
 	}
-	db, err = sqlx.Open(dbDriver, dbUser+":"+dbPass+"@"+"(db:3306)"+"/"+dbName)
+	db, err = sqlx.Open(dbDriver, dbUser+":"+dbPass+"@"+"(db-master:3306)"+"/"+dbName)
 	if err != nil {
 		fmt.Println(err)
 	}
