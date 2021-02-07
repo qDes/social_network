@@ -1,0 +1,33 @@
+version: '3.7'
+
+services:
+  mysql:
+    image: 'percona:8.0'
+    container_name: db-master
+    volumes:
+      - ./build_env/mysql/master.cnf:/etc/my.cnf.d/repl.cnf
+      - ./build_env/mysql/master.sql:/docker-entrypoint-initdb.d/start.sql
+    environment:
+      MYSQL_ROOT_PASSWORD: "secret"
+
+  mysqlread1:
+    image: 'percona:8.0'
+    container_name: db-slave1
+    volumes:
+      - ./build_env/mysql/slave1.cnf:/etc/my.cnf.d/repl.cnf
+      - ./build_env/mysql/slave.sql:/docker-entrypoint-initdb.d/start.sql
+    depends_on:
+      - mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: "secret"
+
+  mysqlread2:
+    image: 'percona:8.0'
+    container_name: db-slave2
+    volumes:
+      - ./build_env/mysql/slave2.cnf:/etc/my.cnf.d/repl.cnf
+      - ./build_env/mysql/slave.sql:/docker-entrypoint-initdb.d/start.sql
+    depends_on:
+      - mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: "secret"
