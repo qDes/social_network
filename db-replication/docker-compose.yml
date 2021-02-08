@@ -8,6 +8,11 @@ services:
       - ./build_env/mysql/master.cnf:/etc/my.cnf.d/repl.cnf
       - ./build_env/mysql/master.sql:/docker-entrypoint-initdb.d/start.sql
     environment:
+      MYSQL_DATABASE: 'db'
+      # So you don't have to use root, but you can if you like
+      MYSQL_USER: 'user'
+      # You can use whatever password you like
+      MYSQL_PASSWORD: 'password'
       MYSQL_ROOT_PASSWORD: "secret"
 
   mysqlread1:
@@ -19,6 +24,11 @@ services:
     depends_on:
       - mysql
     environment:
+      MYSQL_DATABASE: 'db'
+      # So you don't have to use root, but you can if you like
+      MYSQL_USER: 'user'
+      # You can use whatever password you like
+      MYSQL_PASSWORD: 'password'
       MYSQL_ROOT_PASSWORD: "secret"
 
   mysqlread2:
@@ -30,4 +40,23 @@ services:
     depends_on:
       - mysql
     environment:
+      MYSQL_DATABASE: 'db'
+      # So you don't have to use root, but you can if you like
+      MYSQL_USER: 'user'
+      # You can use whatever password you like
+      MYSQL_PASSWORD: 'password'
       MYSQL_ROOT_PASSWORD: "secret"
+
+  liquibase:
+    build:
+      context: ../db-migrations/
+    command: update
+    restart: on-failure
+    container_name: liquibase
+    environment:
+      - LIQUIBASE_CHANGELOG=changelog.xml
+      - LIQUIBASE_URL=jdbc:mysql://mysql:3306
+      - LIQUIBASE_USERNAME=root
+      - LIQUIBASE_PASSWORD=secret
+    depends_on:
+      - mysql
