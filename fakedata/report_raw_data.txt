@@ -309,3 +309,107 @@ Latency Distribution
 27586 requests in 10.02s, 6.05MB read
 Requests/sec:   2753.27
 Transfer/sec:    618.41KB
+
+## index on (second_name, first_name)
+create index users_second_name_first_name_index
+on users (second_name, first_name);
+{
+  "query_block": {
+    "select_id": 1,
+    "cost_info": {
+      "query_cost": "3.41"
+    },
+    "ordering_operation": {
+      "using_filesort": true,
+      "cost_info": {
+        "sort_cost": "1.00"
+      },
+      "table": {
+        "table_name": "users",
+        "access_type": "range",
+        "possible_keys": [
+          "users_second_name_first_name_index"
+        ],
+        "key": "users_second_name_first_name_index",
+        "used_key_parts": [
+          "second_name",
+          "first_name"
+        ],
+        "key_length": "104",
+        "rows_examined_per_scan": 1,
+        "rows_produced_per_join": 1,
+        "filtered": "100.00",
+        "index_condition": "((`db`.`users`.`first_name` like 'Bobby') and (`db`.`users`.`second_name` like 'Chase'))",
+        "cost_info": {
+          "read_cost": "2.21",
+          "eval_cost": "0.20",
+          "prefix_cost": "2.41",
+          "data_read_per_join": "1K"
+        },
+        "used_columns": [
+          "id",
+          "username",
+          "first_name",
+          "second_name"
+        ]
+      }
+    }
+  }
+}
+
+## Running 10s test @ http://0.0.0.0:3000/account/search_user?firstname=Bobby&secondname=Chase
+  1 threads and 1 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     2.52ms    1.03ms  13.51ms   89.66%
+    Req/Sec   407.78     82.72   515.00     79.00%
+  Latency Distribution
+     50%    2.18ms
+     75%    2.51ms
+     90%    3.60ms
+     99%    6.86ms
+  4062 requests in 10.01s, 0.89MB read
+Requests/sec:    405.82
+Transfer/sec:     91.15KB
+
+## Running 10s test @ http://0.0.0.0:3000/account/search_user?firstname=Bobby&secondname=Chase
+  1 threads and 10 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     6.81ms    2.52ms  32.38ms   80.20%
+    Req/Sec     1.49k   276.17     2.03k    61.39%
+  Latency Distribution
+     50%    6.13ms
+     75%    7.78ms
+     90%    9.97ms
+     99%   15.96ms
+  14956 requests in 10.10s, 3.28MB read
+Requests/sec:   1480.50
+Transfer/sec:    332.53KB
+
+## Running 10s test @ http://0.0.0.0:3000/account/search_user?firstname=Bobby&secondname=Chase
+     1 threads and 100 connections
+     Thread Stats   Avg      Stdev     Max   +/- Stdev
+       Latency    82.97ms  130.11ms   1.01s    93.58%
+       Req/Sec     1.84k   563.66     3.97k    72.00%
+     Latency Distribution
+        50%   47.97ms
+        75%   79.85ms
+        90%  141.79ms
+        99%  781.16ms
+     18289 requests in 10.01s, 4.01MB read
+   Requests/sec:   1826.57
+   Transfer/sec:    410.26KB
+
+## Running 2m test @ http://0.0.0.0:3000/account/search_user?firstname=Bobby&secondname=Chase
+     1 threads and 1000 connections
+     Thread Stats   Avg      Stdev     Max   +/- Stdev
+       Latency   375.64ms  671.30ms  13.87s    91.02%
+       Req/Sec     2.34k   610.15     4.74k    73.72%
+     Latency Distribution
+        50%  138.99ms
+        75%  479.41ms
+        90%  979.37ms
+        99%    2.70s
+     278057 requests in 2.00m, 60.99MB read
+     Socket errors: connect 0, read 851, write 0, timeout 0
+   Requests/sec:   2316.16
+   Transfer/sec:    520.23KB
