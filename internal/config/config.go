@@ -15,12 +15,12 @@ type Service struct {
 func GetSvc() *Service {
 	// TODO: replace with viper
 	dbDriver := "mysql"
-	dbName := "db"
-	dbUser := "user"
-	dbPass := "password"
+	dbName := "mydb"//"db"
+	dbUser := "root"//"user"
+	dbPass := "111"//"password"
 
 	// db, err := sqlx.Open(dbDriver, dbUser+":"+dbPass+"@"+"(db:3306)"+"/"+dbName)
-	db, err := sqlx.Open(dbDriver, dbUser+":"+dbPass+"@"+"(0.0.0.0:3306)"+"/"+dbName)
+	db, err := sqlx.Open(dbDriver, dbUser+":"+dbPass+"@"+"(0.0.0.0:5506)"+"/"+dbName)
 	if err != nil {
 		fmt.Println(err)
 		fmt.Println("connecting to compose db")
