@@ -3,5 +3,6 @@
 */env/*
 fakedata/fake_users.csv
 */.ipynb_checkpoints/
-db-replication/repl-compose/slave/data/*
+db-replication/repl-compose/slave_1/data/*
+db-replication/repl-compose/slave_2/data/*
 db-replication/repl-compose/master/data/*
