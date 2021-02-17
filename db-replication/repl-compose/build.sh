@@ -2,7 +2,7 @@
 
 docker-compose down
 rm -rf ./master/data/*
-rm -rf ./slave/data/*
+rm -rf ./slave_1/data/*
 docker-compose build
 docker-compose up -d
 
