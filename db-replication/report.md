@@ -126,4 +126,4 @@ CHANGE MASTER TO MASTER_HOST='172.29.0.4',
     MASTER_LOG_POS=484;
 START SLAVE;
 ```
-Данные потеряны.
+Данные потеряны (не синхронизовались).
