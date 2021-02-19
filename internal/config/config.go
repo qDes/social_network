@@ -20,7 +20,7 @@ func GetSvc() *Service {
 	dbPass := "111"//"password"
 
 	// db, err := sqlx.Open(dbDriver, dbUser+":"+dbPass+"@"+"(db:3306)"+"/"+dbName)
-	db, err := sqlx.Open(dbDriver, dbUser+":"+dbPass+"@"+"(0.0.0.0:6606)"+"/"+dbName)
+	db, err := sqlx.Open(dbDriver, dbUser+":"+dbPass+"@"+"(0.0.0.0:3306)"+"/"+dbName)
 	if err != nil {
 		fmt.Println(err)
 		fmt.Println("connecting to compose db")

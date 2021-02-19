@@ -90,3 +90,40 @@ START SLAVE;
 ```
 
 Запускаем приложение - пишем в новый мастер - читаем на слейве(потерь нету).
+
+
+## UPD
+В качестве нагрузки используем запись в 6 потоков id и текстов в таблицу test (go-приложение cmd/transaction/main.go).
+```sql
+create table test
+(
+    id int null,
+    dummy1 varchar(10000) null,
+    dummy2 varchar(10000) null,
+    dummy3 varchar(10000) null,
+    dummy4 varchar(10000) null,
+    dummy5 varchar(10000) null,
+    dummy6 varchar(10000) null
+);
+```
+Убиваем мастер<br>
+На стороне нагрузки последняя запись last id 1767 invalid connection.
+
+slave_1 более свежий и имеет 1368 записей (slave_2 имеет 1302 записи)<br>
+Промоутим slave_1:
+```sql
+GRANT REPLICATION SLAVE ON *.* TO "mydb_slave_user"@"%" IDENTIFIED BY "mydb_slave_pwd";
+stop slave;
+set global read_only=OFF;
+```
+Переключаем мастера на slave_2:
+```sql
+stop slave;
+CHANGE MASTER TO MASTER_HOST='172.29.0.4',
+    MASTER_USER='mydb_slave_user',
+    MASTER_PASSWORD='mydb_slave_pwd',
+    MASTER_LOG_FILE='mysql-bin.000004',
+    MASTER_LOG_POS=484;
+START SLAVE;
+```
+Данные потеряны.
