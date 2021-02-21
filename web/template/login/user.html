@@ -44,10 +44,20 @@
         <br>
         {{end}}
 
-        {{if .add}}     <form action="/account/add_friend">
+        {{if .add}}
+        <form action="/account/add_friend">
             <input type="hidden" value="{{.username}}" name="username">
             <input type="hidden" value="{{.session_user}}" name="user_session">
             <input type="submit" value="Add" />
+        </form>
+        {{end}}
+
+        <h3>Posts:</h3>
+        {{if .add_post}}
+        <form action="/account/add_post">
+            <input type="hidden" value="{{.user_id}}" name="user_id">
+            <input type="text" value=" " name="post_text" width="40" size="50">>
+            <input type="submit" value="Post" />
         </form>
         {{end}}
 

@@ -11,6 +11,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
+	"github.com/streadway/amqp"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -60,11 +61,48 @@ func Login(resp http.ResponseWriter, req *http.Request) {
 
 }
 
+func UserFeed(resp http.ResponseWriter, req *http.Request) {
+
+	//tmp, _ := template.ParseFiles("web/template/login/user.html")
+	//tmp.Execute(resp, data)
+
+}
+
+func AddUserPost(resp http.ResponseWriter, req *http.Request) {
+	req.ParseForm()
+	userID := req.Form.Get("user_id")
+	text := req.Form.Get("post_text")
+	//_ = model.AddFriend(svc.DB, username, sessionUser)
+
+	msg := userID + ":" + text
+	err := svc.Feed.Publish(
+		"",         // exchange
+		svc.Q.Name, // routing key
+		false,      // mandatory
+		false,      // immediate
+		amqp.Publishing{
+			ContentType: "text/plain",
+			Body:        []byte(msg),
+		})
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Println(userID, text)
+	http.Redirect(resp, req, "/", http.StatusSeeOther)
+
+	//tmp, _ := template.ParseFiles("web/template/login/user.html")
+	//tmp.Execute(resp, data)
+
+}
+
 func UserPage(resp http.ResponseWriter, req *http.Request) {
 	var (
-		sex string
-		add bool
+		sex          string
+		add, addPost bool
 	)
+
 	vars := mux.Vars(req)
 	username := vars["username"]
 
@@ -83,6 +121,12 @@ func UserPage(resp http.ResponseWriter, req *http.Request) {
 	} else {
 		sex = "M"
 	}
+
+	//check add post
+	if username == fmt.Sprintf("%v", sessionUser) {
+		addPost = true
+	}
+
 	// check add button rendering
 	if (username != fmt.Sprintf("%v", sessionUser)) &&
 		!(model.CheckFriends(svc.DB, username, fmt.Sprintf("%v", sessionUser))) {
@@ -90,6 +134,7 @@ func UserPage(resp http.ResponseWriter, req *http.Request) {
 	}
 
 	data := map[string]interface{}{
+		"user_id":      user.ID,
 		"username":     username,
 		"name":         user.FirstName,
 		"second_name":  user.SecondName,
@@ -98,6 +143,7 @@ func UserPage(resp http.ResponseWriter, req *http.Request) {
 		"interests":    user.Interests,
 		"urls":         model.GetFriends(svc.DB, username),
 		"add":          add,
+		"add_post":     addPost,
 		"session_user": sessionUser,
 	}
 	tmp, _ := template.ParseFiles("web/template/login/user.html")
