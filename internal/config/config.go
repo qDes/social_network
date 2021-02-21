@@ -15,9 +15,9 @@ type Service struct {
 func GetSvc() *Service {
 	// TODO: replace with viper
 	dbDriver := "mysql"
-	dbName := "mydb"//"db"
-	dbUser := "root"//"user"
-	dbPass := "111"//"password"
+	dbName := "db"//"mydb"//
+	dbUser := "user"//"root"//
+	dbPass := "password"//"111"//
 
 	// db, err := sqlx.Open(dbDriver, dbUser+":"+dbPass+"@"+"(db:3306)"+"/"+dbName)
 	db, err := sqlx.Open(dbDriver, dbUser+":"+dbPass+"@"+"(0.0.0.0:3306)"+"/"+dbName)

@@ -6,3 +6,5 @@ fakedata/fake_users.csv
 db-replication/repl-compose/slave_1/data/*
 db-replication/repl-compose/slave_2/data/*
 db-replication/repl-compose/master/data/*
+rabbit/rabbitmq-data
+rabbit/rabbitmq-logs
