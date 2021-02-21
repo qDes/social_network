@@ -1,0 +1,79 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+
+    <changeSet id="2021-02-21--posts_table_create" author="Kozlov-A">
+        <createTable tableName="posts">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="id_user" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="text" type="varchar(10000)">
+            </column>
+            <column name="dttm_inserted" type="timestamp" defaultValueComputed="now()"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2021-02-21--posts_table_id_addAutoIncrement" author="Kozlov-A">
+        <addAutoIncrement
+                columnDataType="bigint"
+                columnName="id"
+                incrementBy="1"
+                startWith="1"
+                tableName="posts"/>
+    </changeSet>
+
+
+    <changeSet id="2021-02-21--add_posts_to_users_table_fk" author="Kozlov-A">
+        <addForeignKeyConstraint
+                baseColumnNames="id_user"
+                baseTableName="posts"
+                constraintName="posts_to_users_table_fk"
+                referencedColumnNames="id"
+                referencedTableName="users"/>
+    </changeSet>
+
+    <changeSet id="2021-02-21--add_users_and_users_1_to_users_table_fk" author="Kozlov-A">
+        <addForeignKeyConstraint
+                baseColumnNames="id_user_1"
+                baseTableName="user_and_user"
+                constraintName="user_and_user_1_users_table_fk"
+                referencedColumnNames="id"
+                referencedTableName="users"/>
+    </changeSet>
+
+    <changeSet id="2021-02-21--add_users_and_users_2_to_users_table_fk" author="Kozlov-A">
+        <addForeignKeyConstraint
+                baseColumnNames="id_user_2"
+                baseTableName="user_and_user"
+                constraintName="user_and_user_2_users_table_fk"
+                referencedColumnNames="id"
+                referencedTableName="users"/>
+    </changeSet>
+
+    <changeSet id="2021-02-21--create_index_users" author="Kozlov-A">
+        <createIndex indexName="index_first_name_second_name" tableName="users">
+            <column name="first_name"/>
+            <column name="second_name"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="2021-02-21--create_index_users_and_users" author="Kozlov-A">
+        <createIndex indexName="index_user_and_user" tableName="user_and_user">
+            <column name="id_user_1"/>
+            <column name="id_user_2"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="2021-02-21--create_index_posts" author="Kozlov-A">
+        <createIndex indexName="index_posts_user" tableName="posts">
+            <column name="id_user"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>
