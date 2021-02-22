@@ -10,3 +10,10 @@ type User struct {
 	City       string
 	Interests  string
 }
+
+type Post struct {
+	ID     int64
+	UserID int64
+	Text   string
+	Date   string
+}

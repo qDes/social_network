@@ -18,6 +18,37 @@ func InsertUser(db *sqlx.DB, username, password, firstName, secondName, city, in
 
 }
 
+func GetUserPosts(db *sqlx.DB, userID int64) []Post {
+	var (
+		posts []Post
+		post Post
+	)
+
+	query := `SELECT id, id_user, text, dttm_inserted FROM posts WHERE id_user=? ORDER by dttm_inserted;`
+	rows, err := db.Query(query, userID)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		if err := rows.Scan(&post.ID, &post.UserID, &post.Text, &post.Date); err != nil {
+			// Check for a scan error.
+			// Query rows will be closed with defer.
+			log.Fatal(err)
+		}
+		posts = append(posts, post)
+	}
+
+	return posts
+
+}
+
+func SavePost(db *sqlx.DB, userID int64, text string) error {
+	query := `INSERT INTO posts (id_user, text) VALUES (?, ?);`
+	_, err := db.Query(query, userID, text)
+	return err
+}
+
 func AddFriend(db *sqlx.DB, firstUser, secondUser string) error {
 	id1 := getUserID(db, firstUser)
 	id2 := getUserID(db, secondUser)

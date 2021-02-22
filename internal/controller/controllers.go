@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"social_network/internal/config"
 	"social_network/internal/model"
+	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
@@ -70,12 +71,17 @@ func UserFeed(resp http.ResponseWriter, req *http.Request) {
 
 func AddUserPost(resp http.ResponseWriter, req *http.Request) {
 	req.ParseForm()
-	userID := req.Form.Get("user_id")
+	userID, _ := strconv.ParseInt(req.Form.Get("user_id"), 10, 64)
 	text := req.Form.Get("post_text")
-	//_ = model.AddFriend(svc.DB, username, sessionUser)
-
-	msg := userID + ":" + text
-	err := svc.Feed.Publish(
+	//write post to mysql
+	err := model.SavePost(svc.DB, userID, text)
+	if err != nil {
+		fmt.Println(err)
+	}
+	// get user friends
+	// write to rabbit friend_id + user post
+	msg := ":" + text
+	err = svc.Feed.Publish(
 		"",         // exchange
 		svc.Q.Name, // routing key
 		false,      // mandatory
@@ -127,6 +133,8 @@ func UserPage(resp http.ResponseWriter, req *http.Request) {
 		addPost = true
 	}
 
+	userPosts := model.GetUserPosts(svc.DB, user.ID)
+	//fmt.Println(userPosts)
 	// check add button rendering
 	if (username != fmt.Sprintf("%v", sessionUser)) &&
 		!(model.CheckFriends(svc.DB, username, fmt.Sprintf("%v", sessionUser))) {
@@ -145,6 +153,7 @@ func UserPage(resp http.ResponseWriter, req *http.Request) {
 		"add":          add,
 		"add_post":     addPost,
 		"session_user": sessionUser,
+		"posts":        userPosts,
 	}
 	tmp, _ := template.ParseFiles("web/template/login/user.html")
 	tmp.Execute(resp, data)

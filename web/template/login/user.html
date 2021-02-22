@@ -53,7 +53,12 @@
         {{end}}
 
         <h3>Posts:</h3>
+            {{range $element := .posts}}
+            {{$element.Text}} {{$element.Date}}<br>
+
+            {{end}}
         {{if .add_post}}
+
         <form action="/account/add_post">
             <input type="hidden" value="{{.user_id}}" name="user_id">
             <input type="text" value=" " name="post_text" width="40" size="50">>
