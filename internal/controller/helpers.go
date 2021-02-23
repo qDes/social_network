@@ -19,6 +19,8 @@ func getHash(pwd []byte) string {
 
 
 func QReader(){
+	var post model.Post
+
 	msgs, err := svc.Feed.Consume(
 		svc.Q.Name,
 		"",     // consumer
@@ -31,12 +33,11 @@ func QReader(){
 	if err != nil {
 		fmt.Println("Qreader error", err)
 	}
-	var post model.Post
 	for d := range msgs {
 		err := json.Unmarshal(d.Body, &post)
 		if err != nil {
 			fmt.Println("Unmarshalling error", err)
 		}
-		fmt.Println("RECV:", post.UserID, post.Text, post.Date)
+		fmt.Println("RECV:", post)
 	}
 }

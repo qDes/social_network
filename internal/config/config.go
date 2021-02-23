@@ -23,9 +23,9 @@ func GetSvc() *Service {
 
 	// connection to mysql
 	dbDriver := "mysql"
-	dbName := "db"//"mydb"//
-	dbUser := "user"//"root"//
-	dbPass := "password"//"111"//
+	dbName := "db" //"mydb"//
+	dbUser := "user" //"root"//
+	dbPass := "password" //"secret"
 
 	// db, err := sqlx.Open(dbDriver, dbUser+":"+dbPass+"@"+"(db:3306)"+"/"+dbName+"?parseTime=true")
 	db, err := sqlx.Open(dbDriver, dbUser+":"+dbPass+"@"+"(0.0.0.0:3306)"+"/"+dbName+"?parseTime=true")

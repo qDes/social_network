@@ -85,11 +85,10 @@ func AddUserPost(resp http.ResponseWriter, req *http.Request) {
 	// get user friends
 	friendsIDs := model.GetFriendsIDs(svc.DB, userID)
 	// write to rabbit friend_id + user post
-	msg := model.Post{UserID: userID, Text: text, Date: now}
-	data, err := json.Marshal(msg)
-	//msg := ":" + text
-	for _, ID := range friendsIDs {
-		fmt.Println(ID)
+
+	for _, friendID := range friendsIDs {
+		msg := model.Post{FriendID: friendID, UserID: userID, Text: text, Date: now}
+		data, err := json.Marshal(msg)
 		err = svc.Feed.Publish(
 			"",         // exchange
 			svc.Q.Name, // routing key

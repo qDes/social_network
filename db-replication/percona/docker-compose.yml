@@ -18,7 +18,7 @@ services:
     container_name: db-slave1
     volumes:
       - ./build_env/mysql/slave1.cnf:/etc/my.cnf.d/repl.cnf
-      - ./build_env/mysql/slave_1.sql:/docker-entrypoint-initdb.d/start.sql
+      - ./build_env/mysql/slave.sql:/docker-entrypoint-initdb.d/start.sql
     depends_on:
       - mysql
     environment:
@@ -32,7 +32,7 @@ services:
     container_name: db-slave2
     volumes:
       - ./build_env/mysql/slave2.cnf:/etc/my.cnf.d/repl.cnf
-      - ./build_env/mysql/slave_1.sql:/docker-entrypoint-initdb.d/start.sql
+      - ./build_env/mysql/slave.sql:/docker-entrypoint-initdb.d/start.sql
     depends_on:
       - mysql
     environment:

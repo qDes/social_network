@@ -1,12 +1,14 @@
 package model
 
-import "time"
+import (
+	"time"
+)
 
 type User struct {
 	ID         int64
 	Username   string
 	Password   string
-	FirstName       string
+	FirstName  string
 	SecondName string
 	Sex        []byte
 	City       string
@@ -14,8 +16,13 @@ type User struct {
 }
 
 type Post struct {
-	ID     int64
-	UserID int64
-	Text   string
-	Date   time.Time
+	ID       int64
+	FriendID int64
+	UserID   int64
+	Text     string
+	Date     time.Time
+}
+
+type Feed struct {
+	Posts []Post
 }
