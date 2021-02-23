@@ -4,7 +4,7 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
 
         <title>
-            Welcome
+            Feed
         </title>
     </head>
     <body>
@@ -29,47 +29,11 @@
         </div>
     </nav>
 
+    <h3>Feed:</h3>
+    {{range $element := .posts}}
+    {{$element.Text}} {{$element.Date}}<br>
 
-        <h3>Welcome, {{.username}}</h3>
-        <h3>User's profile:</h3>
-        <h3>{{.name}} {{.second_name}}</h3>
-        <h3>Sex: {{.sex}}</h3>
-        <h3>City: {{.city}}</h3>
-        <h3>Interests: {{.interests}}</h3>
-        <br>
-        <a href="/account/logout" class="btn btn-secondary btn-lg" >Logout</a> <br><br>
-        <h3>Friends:</h3>
-        <br>
-        {{range $element := .urls}}
-        <a href="/account/page/{{$element}}">{{$element}}</a>
-        <br>
-        {{end}}
-
-        {{if .add}}
-        <form action="/account/add_friend">
-            <input type="hidden" value="{{.username}}" name="username">
-            <input type="hidden" value="{{.session_user}}" name="user_session">
-            <input type="submit" value="Add" />
-        </form>
-        {{end}}
-
-        {{if .add_post}}
-        <a href="/account/feed" class="btn btn-info" >Feed</a> <br><br>
-
-        <form action="/account/add_post">
-            <input type="hidden" value="{{.user_id}}" name="user_id">
-            <input type="text" value=" " name="post_text" width="40" size="50">>
-            <input type="submit" value="Post" />
-        </form>
-        {{end}}
-
-
-        <h3>Posts:</h3>
-        {{range $element := .posts}}
-        {{$element.Text}} {{$element.Date}}<br>
-
-        {{end}}
-
+    {{end}}
 
 
     </body>

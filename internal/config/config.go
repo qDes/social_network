@@ -27,12 +27,12 @@ func GetSvc() *Service {
 	dbUser := "user"//"root"//
 	dbPass := "password"//"111"//
 
-	// db, err := sqlx.Open(dbDriver, dbUser+":"+dbPass+"@"+"(db:3306)"+"/"+dbName)
-	db, err := sqlx.Open(dbDriver, dbUser+":"+dbPass+"@"+"(0.0.0.0:3306)"+"/"+dbName)
+	// db, err := sqlx.Open(dbDriver, dbUser+":"+dbPass+"@"+"(db:3306)"+"/"+dbName+"?parseTime=true")
+	db, err := sqlx.Open(dbDriver, dbUser+":"+dbPass+"@"+"(0.0.0.0:3306)"+"/"+dbName+"?parseTime=true")
 	if err != nil {
 		fmt.Println(err)
 		fmt.Println("connecting to compose db")
-		db, err = sqlx.Open(dbDriver, dbUser+":"+dbPass+"@"+"(db:3306)"+"/"+dbName)
+		db, err = sqlx.Open(dbDriver, dbUser+":"+dbPass+"@"+"(db:3306)"+"/"+dbName+"?parseTime=true")
 		if err != nil {
 			panic(err)
 		}

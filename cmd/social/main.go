@@ -27,7 +27,7 @@ func main() {
 	r.HandleFunc("/account/search_user", controller.SearchUser)
 	r.HandleFunc("/account/search", controller.Search)
 
-	r.HandleFunc("/account/feed/{username}", controller.UserFeed)
+	r.HandleFunc("/account/feed", controller.UserFeed)
 	r.HandleFunc("/account/add_post", controller.AddUserPost)
 
 

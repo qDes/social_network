@@ -1,8 +1,10 @@
 package controller
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
+	"social_network/internal/model"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -29,7 +31,12 @@ func QReader(){
 	if err != nil {
 		fmt.Println("Qreader error", err)
 	}
+	var post model.Post
 	for d := range msgs {
-		fmt.Printf("Received a message: %s", d.Body)
+		err := json.Unmarshal(d.Body, &post)
+		if err != nil {
+			fmt.Println("Unmarshalling error", err)
+		}
+		fmt.Println("RECV:", post.UserID, post.Text, post.Date)
 	}
 }

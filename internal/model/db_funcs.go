@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
@@ -43,9 +44,10 @@ func GetUserPosts(db *sqlx.DB, userID int64) []Post {
 
 }
 
-func SavePost(db *sqlx.DB, userID int64, text string) error {
-	query := `INSERT INTO posts (id_user, text) VALUES (?, ?);`
-	_, err := db.Query(query, userID, text)
+func SavePost(db *sqlx.DB, userID int64, text string, now time.Time) error {
+
+	query := `INSERT INTO posts (id_user, text, dttm_inserted) VALUES (?, ?, ?);`
+	_, err := db.Query(query, userID, text, now)
 	return err
 }
 
@@ -95,9 +97,10 @@ func GetUser(db *sqlx.DB, username string) (User, error) {
 
 func GetFriends(db *sqlx.DB, username string) []string {
 	userID := getUserID(db, username)
-	friendsIDs := getFriendsIDs(db, userID)
+	friendsIDs := GetFriendsIDs(db, userID)
 	return getFriendsUsernames(db, friendsIDs)
 }
+
 
 func NameSearch(db *sqlx.DB, firstName, secondName string) []User {
 	var users []User
@@ -209,7 +212,7 @@ func getFriendsUsernames(db *sqlx.DB, ids []int64) []string {
 	return usernames
 }
 
-func getFriendsIDs(db *sqlx.DB, userID int64) []int64 {
+func GetFriendsIDs(db *sqlx.DB, userID int64) []int64 {
 	var ids []int64
 	query := `SELECT id_user_1, id_user_2 FROM user_and_user WHERE id_user_1=? or id_user_2=?;`
 	rows, err := db.Query(query, userID, userID)

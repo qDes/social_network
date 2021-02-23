@@ -9,6 +9,7 @@ import (
 	"social_network/internal/config"
 	"social_network/internal/model"
 	"strconv"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
@@ -63,10 +64,12 @@ func Login(resp http.ResponseWriter, req *http.Request) {
 }
 
 func UserFeed(resp http.ResponseWriter, req *http.Request) {
+	data := map[string]interface{}{
 
-	//tmp, _ := template.ParseFiles("web/template/login/user.html")
-	//tmp.Execute(resp, data)
+	}
 
+	tmp, _ := template.ParseFiles("web/template/feed/feed.html")
+	tmp.Execute(resp, data)
 }
 
 func AddUserPost(resp http.ResponseWriter, req *http.Request) {
@@ -74,32 +77,35 @@ func AddUserPost(resp http.ResponseWriter, req *http.Request) {
 	userID, _ := strconv.ParseInt(req.Form.Get("user_id"), 10, 64)
 	text := req.Form.Get("post_text")
 	//write post to mysql
-	err := model.SavePost(svc.DB, userID, text)
+	now := time.Now()
+	err := model.SavePost(svc.DB, userID, text, now)
 	if err != nil {
 		fmt.Println(err)
 	}
 	// get user friends
+	friendsIDs := model.GetFriendsIDs(svc.DB, userID)
 	// write to rabbit friend_id + user post
-	msg := ":" + text
-	err = svc.Feed.Publish(
-		"",         // exchange
-		svc.Q.Name, // routing key
-		false,      // mandatory
-		false,      // immediate
-		amqp.Publishing{
-			ContentType: "text/plain",
-			Body:        []byte(msg),
-		})
-
-	if err != nil {
-		fmt.Println(err)
+	msg := model.Post{UserID: userID, Text: text, Date: now}
+	data, err := json.Marshal(msg)
+	//msg := ":" + text
+	for _, ID := range friendsIDs {
+		fmt.Println(ID)
+		err = svc.Feed.Publish(
+			"",         // exchange
+			svc.Q.Name, // routing key
+			false,      // mandatory
+			false,      // immediate
+			amqp.Publishing{
+				ContentType: "application/json",
+				Body:        data,
+			})
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 
-	fmt.Println(userID, text)
-	http.Redirect(resp, req, "/", http.StatusSeeOther)
 
-	//tmp, _ := template.ParseFiles("web/template/login/user.html")
-	//tmp.Execute(resp, data)
+	http.Redirect(resp, req, "/", http.StatusSeeOther)
 
 }
 
@@ -155,7 +161,10 @@ func UserPage(resp http.ResponseWriter, req *http.Request) {
 		"session_user": sessionUser,
 		"posts":        userPosts,
 	}
-	tmp, _ := template.ParseFiles("web/template/login/user.html")
+	tmp, err := template.ParseFiles( "web/template/login/user.html")
+	if err != nil {
+		fmt.Println(err)
+	}
 	tmp.Execute(resp, data)
 
 }
