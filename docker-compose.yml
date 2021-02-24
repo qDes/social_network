@@ -8,6 +8,7 @@ networks:
 services:
   goservice:
     build: "."
+    restart: on-failure
     ports:
       - '3000:3000'
     networks:
@@ -15,6 +16,7 @@ services:
 
   nginx:
     build: "./nginx"
+    restart: on-failure
     ports:
       - "80:80"
     depends_on:
@@ -64,6 +66,7 @@ services:
   redis:
     image: redis:alpine
     container_name: link_provider_redis
+    restart: on-failure
     command: redis-server --maxmemory 15gb --maxmemory-policy allkeys-lru --maxclients 200000
     ports:
       - 6379:6379
@@ -75,6 +78,7 @@ services:
       context: rabbit
       dockerfile: Dockerfile
     container_name: rabbitmq
+    restart: on-failure
     environment:
       RABBITMQ_ERLANG_COOKIE: '!SecretCookie!'
     networks:
