@@ -2,6 +2,7 @@ package controller
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"html/template"
@@ -64,8 +65,32 @@ func Login(resp http.ResponseWriter, req *http.Request) {
 }
 
 func UserFeed(resp http.ResponseWriter, req *http.Request) {
-	data := map[string]interface{}{
+	var feed model.Feed
 
+
+	session, _ := store.Get(req, "mysession")
+	sessionUser := session.Values["username"]
+	if sessionUser == nil {
+		http.Redirect(resp, req, "/", http.StatusSeeOther)
+	}
+	user, _ := model.GetUser(svc.DB, fmt.Sprintf("%v", sessionUser))
+	if user.ID == 0 {
+		http.Redirect(resp, req, "/", http.StatusSeeOther)
+	}
+
+	ctx := context.Background()
+	redisFeed := svc.RDB.Get(ctx, strconv.Itoa(int(user.ID)))
+	redisBytes, err := redisFeed.Bytes()
+	if err != nil {
+		fmt.Println("redis Bytes error")
+	}
+	err = json.Unmarshal(redisBytes, &feed)
+	if err != nil {
+		fmt.Println("unmarshalling error")
+	}
+
+	data := map[string]interface{}{
+		"posts": feed.Posts,
 	}
 
 	tmp, _ := template.ParseFiles("web/template/feed/feed.html")
@@ -102,7 +127,6 @@ func AddUserPost(resp http.ResponseWriter, req *http.Request) {
 			fmt.Println(err)
 		}
 	}
-
 
 	http.Redirect(resp, req, "/", http.StatusSeeOther)
 

@@ -24,5 +24,6 @@ type Post struct {
 }
 
 type Feed struct {
-	Posts []Post
+	UserID int64
+	Posts  []Post
 }

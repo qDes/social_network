@@ -44,6 +44,57 @@ func GetUserPosts(db *sqlx.DB, userID int64) []Post {
 
 }
 
+func GetUserFeed(db *sqlx.DB, userID int64) Feed {
+	var (
+		post Post
+		feed Feed
+	)
+	feed.UserID = userID
+	IDs := GetFriendsIDs(db, userID)
+	query, args, err := sqlx.In("SELECT id, id_user, text, dttm_inserted FROM posts WHERE id_user IN (?) " +
+		"ORDER BY dttm_inserted DESC LIMIT 1000;", IDs)
+	query = db.Rebind(query)
+	rows, err := db.Query(query, args...)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		if err := rows.Scan(&post.UserID, &post.FriendID, &post.Text, &post.Date); err != nil {
+			// Check for a scan error.
+			// Query rows will be closed with defer.
+			log.Fatal(err)
+		}
+		feed.Posts = append(feed.Posts, post)
+	}
+	return feed
+
+}
+
+func GetUsersIDs(db *sqlx.DB) []int64{
+	var (
+		ids []int64
+		id int64
+		)
+	query := `SELECT id FROM users;`
+	rows, err := db.Query(query)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		if err := rows.Scan(&id); err != nil {
+			// Check for a scan error.
+			// Query rows will be closed with defer.
+			log.Fatal(err)
+		}
+		ids = append(ids, id)
+	}
+
+	return ids
+}
+
 func SavePost(db *sqlx.DB, userID int64, text string, now time.Time) error {
 
 	query := `INSERT INTO posts (id_user, text, dttm_inserted) VALUES (?, ?, ?);`

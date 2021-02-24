@@ -65,9 +65,9 @@ func GetSvc() *Service {
 
 	//connection to redis
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     "0.0.0.0",
+		Addr:     "0.0.0.0:6379",
 		Password: "", // no password set
-		DB:       6379,
+		//DB:       6379,
 	})
 
 
