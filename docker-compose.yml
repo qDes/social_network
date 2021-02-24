@@ -60,3 +60,28 @@ services:
       - db
     networks:
       - sn_net
+
+  redis:
+    image: redis:alpine
+    container_name: link_provider_redis
+    command: redis-server --maxmemory 15gb --maxmemory-policy allkeys-lru --maxclients 200000
+    ports:
+      - 6379:6379
+    networks:
+      - sn_net
+
+  rabbitmq:
+    build:
+      context: rabbit
+      dockerfile: Dockerfile
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_ERLANG_COOKIE: '!SecretCookie!'
+    networks:
+      - sn_net
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - ./rabbit/rabbitmq-data:/var/lib/rabbitmq
+      - ./rabbit/rabbitmq-logs:/var/log/rabbitmq
