@@ -11,6 +11,8 @@ import (
 
 func main() {
 
+	//
+	go controller.InitFeedCache()
 	//read queue
 	go controller.QReader()
 

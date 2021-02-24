@@ -1,11 +1,14 @@
 package controller
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
 	"social_network/internal/model"
+	"strconv"
 
+	"github.com/go-redis/redis/v8"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -38,6 +41,46 @@ func QReader(){
 		if err != nil {
 			fmt.Println("Unmarshalling error", err)
 		}
-		fmt.Println("RECV:", post)
+		fmt.Println("RECV:", post.FriendID)
+		FeedUpdater(post)
+
+	}
+}
+
+func FeedUpdater(post model.Post) {
+	var feed model.Feed
+	ctx := context.Background()
+	// get feed from redis
+	data := svc.RDB.Get(ctx, strconv.Itoa(int(post.FriendID)))
+	if data.Err() == redis.Nil {
+		fmt.Println("No key")
+	}
+	redisBytes, err := data.Bytes()
+	if err != nil {
+		fmt.Println("redis bytes error")
+	}
+	// unmarshal feed
+	err = json.Unmarshal(redisBytes, &feed)
+	if err != nil {
+		fmt.Println("UnMarshalling feed error")
+	}
+	feed.Posts = append([]model.Post{post}, feed.Posts...)
+
+	js, err := json.Marshal(feed)
+	svc.RDB.Set(ctx, strconv.Itoa(int(post.FriendID)), js,0)
+
+}
+
+func InitFeedCache() {
+	IDS := model.GetUsersIDs(svc.DB)
+	ctx := context.Background()
+	for _, id := range IDS {
+		feed := model.GetUserFeed(svc.DB, id)
+		data, err := json.Marshal(feed)
+		if err != nil {
+			fmt.Println("Marshalling feed error")
+		}
+
+		svc.RDB.Set(ctx, strconv.Itoa(int(id)), data, 0)
 	}
 }
