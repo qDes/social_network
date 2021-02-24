@@ -25,7 +25,7 @@ func GetUserPosts(db *sqlx.DB, userID int64) []Post {
 		post Post
 	)
 
-	query := `SELECT id, id_user, text, dttm_inserted FROM posts WHERE id_user=? ORDER by dttm_inserted;`
+	query := `SELECT id, id_user, text, dttm_inserted FROM posts WHERE id_user=? ORDER by dttm_inserted DESC;`
 	rows, err := db.Query(query, userID)
 	if err != nil {
 		fmt.Println(err)
@@ -61,7 +61,7 @@ func GetUserFeed(db *sqlx.DB, userID int64) Feed {
 	}
 	defer rows.Close()
 	for rows.Next() {
-		if err := rows.Scan(&post.UserID, &post.FriendID, &post.Text, &post.Date); err != nil {
+		if err := rows.Scan(&post.ID, &post.UserID, &post.Text, &post.Date); err != nil {
 			// Check for a scan error.
 			// Query rows will be closed with defer.
 			log.Fatal(err)

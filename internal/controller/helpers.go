@@ -54,19 +54,27 @@ func FeedUpdater(post model.Post) {
 	data := svc.RDB.Get(ctx, strconv.Itoa(int(post.FriendID)))
 	if data.Err() == redis.Nil {
 		fmt.Println("No key")
+		feed = model.GetUserFeed(svc.DB, post.FriendID)
+	} else {
+		redisBytes, err := data.Bytes()
+		if err != nil {
+			fmt.Println("redis bytes error")
+		}
+		// unmarshal feed
+		err = json.Unmarshal(redisBytes, &feed)
+		if err != nil {
+			fmt.Println("UnMarshalling feed error")
+		}
+		feed.Posts = append([]model.Post{post}, feed.Posts...)
+		if len(feed.Posts) > 1000 {
+			feed.Posts = feed.Posts[:1000]
+		}
 	}
-	redisBytes, err := data.Bytes()
-	if err != nil {
-		fmt.Println("redis bytes error")
-	}
-	// unmarshal feed
-	err = json.Unmarshal(redisBytes, &feed)
-	if err != nil {
-		fmt.Println("UnMarshalling feed error")
-	}
-	feed.Posts = append([]model.Post{post}, feed.Posts...)
 
 	js, err := json.Marshal(feed)
+	if err != nil {
+		fmt.Println("marshalling error")
+	}
 	svc.RDB.Set(ctx, strconv.Itoa(int(post.FriendID)), js,0)
 
 }
