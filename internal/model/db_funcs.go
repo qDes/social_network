@@ -103,8 +103,8 @@ func SavePost(db *sqlx.DB, userID int64, text string, now time.Time) error {
 }
 
 func AddFriend(db *sqlx.DB, firstUser, secondUser string) error {
-	id1 := getUserID(db, firstUser)
-	id2 := getUserID(db, secondUser)
+	id1 := GetUserID(db, firstUser)
+	id2 := GetUserID(db, secondUser)
 	query := `INSERT INTO user_and_user (id_user_1, id_user_2) VALUES (?,?);`
 	_, err := db.Query(query, id1, id2)
 	return err
@@ -147,7 +147,7 @@ func GetUser(db *sqlx.DB, username string) (User, error) {
 }
 
 func GetFriends(db *sqlx.DB, username string) []string {
-	userID := getUserID(db, username)
+	userID := GetUserID(db, username)
 	friendsIDs := GetFriendsIDs(db, userID)
 	return getFriendsUsernames(db, friendsIDs)
 }
@@ -177,8 +177,8 @@ func NameSearch(db *sqlx.DB, firstName, secondName string) []User {
 
 func CheckFriends(db *sqlx.DB, user1 string, user2 string) bool {
 	var id int
-	user1ID := getUserID(db, user1)
-	user2ID := getUserID(db, user2)
+	user1ID := GetUserID(db, user1)
+	user2ID := GetUserID(db, user2)
 	query := `
 	SELECT id FROM user_and_user WHERE (id_user_1, id_user_2) = (?, ?) 
 		OR (id_user_1, id_user_2) = (?, ?);
@@ -219,7 +219,7 @@ func SearchAll(db *sqlx.DB, search string) []string {
 	return usernames
 }
 
-func getUserID(db *sqlx.DB, username string) int64 {
+func GetUserID(db *sqlx.DB, username string) int64 {
 	var userID int64
 
 	query := `SELECT id FROM users WHERE username=?;`
