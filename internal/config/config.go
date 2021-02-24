@@ -48,7 +48,7 @@ func GetSvc() *Service {
 	db.SetConnMaxLifetime(time.Duration(time.Duration.Seconds(1)))
 
 	// connection to rabbitmq
-	conn, err := amqp.Dial("amqp://rabbit:rabbit@localhost:5672/")
+	conn, err := amqp.Dial("amqp://rabbit:rabbit@rabbitmq:5672/")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -65,7 +65,7 @@ func GetSvc() *Service {
 
 	//connection to redis
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     "0.0.0.0:6379",
+		Addr:     "redis:6379",
 		Password: "", // no password set
 		//DB:       6379,
 	})
