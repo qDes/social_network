@@ -58,6 +58,7 @@ func GetUserFeed(db *sqlx.DB, userID int64) Feed {
 
 	if err != nil {
 		fmt.Println(err)
+		return feed
 	}
 	defer rows.Close()
 	for rows.Next() {

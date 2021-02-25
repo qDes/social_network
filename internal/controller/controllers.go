@@ -198,16 +198,6 @@ func AddFriend(resp http.ResponseWriter, req *http.Request) {
 	sessionUser := req.Form.Get("user_session")
 	_ = model.AddFriend(svc.DB, username, sessionUser)
 
-	id := model.GetUserID(svc.DB, username)
-	fmt.Println(id, username)
-	feed := model.GetUserFeed(svc.DB, id)
-	data, err := json.Marshal(feed)
-	if err != nil {
-		fmt.Println("Marshalling feed error")
-	}
-	ctx := context.Background()
-	svc.RDB.Set(ctx, strconv.Itoa(int(id)), data, 0)
-
 	http.Redirect(resp, req, "/", http.StatusSeeOther)
 }
 

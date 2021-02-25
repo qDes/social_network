@@ -34,7 +34,7 @@ func main() {
 		}
 		data22, err := dat.Bytes()
 		if err != nil {
-			fmt.Println("UnMarshalling feed error")
+			fmt.Println("UnMarshalling feed error", err)
 		}
 		json.Unmarshal(data22, &test)
 		fmt.Println(test)

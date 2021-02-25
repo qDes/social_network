@@ -39,7 +39,7 @@ func QReader(){
 	for d := range msgs {
 		err := json.Unmarshal(d.Body, &post)
 		if err != nil {
-			fmt.Println("Unmarshalling error", err)
+			fmt.Println("QReader Unmarshalling error", err)
 		}
 		fmt.Println("RECV:", post.FriendID)
 		FeedUpdater(post)
@@ -56,6 +56,7 @@ func FeedUpdater(post model.Post) {
 		fmt.Println("No key")
 		feed = model.GetUserFeed(svc.DB, post.FriendID)
 	} else {
+		fmt.Println(data.Err())
 		redisBytes, err := data.Bytes()
 		if err != nil {
 			fmt.Println("redis bytes error")

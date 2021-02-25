@@ -12,7 +12,7 @@ services:
     ports:
       - '3000:3000'
     depends_on:
-      - "db"
+      - "db-master"
       - "liquibase"
     networks:
       - sn_net
@@ -27,9 +27,12 @@ services:
     networks:
       - sn_net
 
-  db:
+  db-master:
     image: mysql:5.7
     restart: always
+    command:
+      - mysqld
+      - --max_connections=2500
     environment:
       MYSQL_DATABASE: 'db'
       # So you don't have to use root, but you can if you like
@@ -38,16 +41,15 @@ services:
       MYSQL_PASSWORD: 'password'
       # Password for root access
       MYSQL_ROOT_PASSWORD: 'password'
+      MYSQL_REPLICATION_MODE: 'master'
     ports:
       # <Port exposed> : < MySQL Port running inside container>
       - '3306:3306'
     expose:
-      # Opens port 3306 on the container
       - '3306'
-      # Where our data
+
     networks:
       - sn_net
-
 
   liquibase:
     build:
@@ -57,12 +59,12 @@ services:
     container_name: liquibase
     environment:
       - LIQUIBASE_CHANGELOG=changelog.xml
-      - LIQUIBASE_URL=jdbc:mysql://db:3306
+      - LIQUIBASE_URL=jdbc:mysql://db-master:3306
       - LIQUIBASE_USERNAME=user
       - LIQUIBASE_PASSWORD=password
       - LIQUIBASE_OPTS=--defaultSchemaName=db --liquibaseSchemaName=db
     depends_on:
-      - db
+      - db-master
     networks:
       - sn_net
 
