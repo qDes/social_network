@@ -8,6 +8,8 @@ services:
   db-master:
     image: mysql:5.7
     restart: always
+    volumes:
+      - ./configs/my-cnf/my.cnf:/etc/mysql/conf.d/my.cnf
     command:
       - mysqld
       - --max_connections=2500
@@ -45,3 +47,34 @@ services:
       - db-master
     networks:
       - sn_net
+
+  tarantool:
+    image: tarantool/tarantool:2.6.0
+    restart: on-failure
+    container_name: tarantool
+    volumes:
+      - ./tarantool:/usr/local/share/tarantool
+    command: tarantool /usr/local/share/tarantool/example.lua
+    ports:
+      - 3301:3301
+    depends_on:
+      - db-master
+    networks:
+      - sn_net
+    environment:
+      TARANTOOL_USER_NAME: admin
+      TARANTOOL_USER_PASSWORD: admin
+
+#  tarantool-repl:
+#    build:
+#      context: ./tarantool/
+#    restart: on-failure
+#    command: tail -F anything
+#    volumes:
+#    - /sys/fs/cgroup:/sys/fs/cgroup
+#    privileged: true
+#    container_name: tarantool-repl
+#    depends_on:
+#      - db-master
+#    networks:
+#      - sn_net
