@@ -69,9 +69,11 @@ services:
 #    build:
 #      context: ./tarantool/
 #    restart: on-failure
-#    command: tail -F anything
+#    #command: tail -F anything
+#    command: ./mysql-tarantool-replication/replicatord
 #    volumes:
 #    - /sys/fs/cgroup:/sys/fs/cgroup
+#    - ./tarantool/replicatord.yml:/usr/local/etc/replicatord.yml
 #    privileged: true
 #    container_name: tarantool-repl
 #    depends_on:
