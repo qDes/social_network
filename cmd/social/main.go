@@ -27,6 +27,7 @@ func main() {
 	r.HandleFunc("/account/signup", controller.SignUp)
 	r.HandleFunc("/account/add_friend", controller.AddFriend)
 	r.HandleFunc("/account/search_user", controller.SearchUser)
+	r.HandleFunc("/account/search_user_tarantool", controller.SearchUserT)
 	r.HandleFunc("/account/search", controller.Search)
 
 	r.HandleFunc("/account/feed", controller.UserFeed)

@@ -255,6 +255,29 @@ func SearchUser(resp http.ResponseWriter, req *http.Request) {
 	resp.Write(js)
 }
 
+// SearchUserT controller for LIKE tarantool queries
+func SearchUserT(resp http.ResponseWriter, req *http.Request) {
+	firstName, ok := req.URL.Query()["firstname"]
+	if !ok {
+		fmt.Println("Url Param 'firstname' is missing")
+	}
+
+	secondName, ok := req.URL.Query()["secondname"]
+	if !ok {
+		fmt.Println("Url Param 'secondname' is missing")
+	}
+	//fmt.Println(firstName, secondName)
+
+	users := model.TarantoolUserSearch(svc.Tarantool, firstName[0], secondName[0])
+
+	js, err := json.Marshal(users)
+	if err != nil {
+		fmt.Println("Users marshalling error")
+	}
+
+	resp.Write(js)
+}
+
 func Search(resp http.ResponseWriter, req *http.Request) {
 	req.ParseForm()
 	searchStr := req.Form.Get("search_string")
