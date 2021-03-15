@@ -60,8 +60,8 @@ function name_search(first, second)
 end
 ```
 В этом случае данные нагрузочного тестирования
-1 threads and 1 connections - 736 RPS
-1 threads and 10 connections - 5716 RPS
-1 threads and 100 connections - 15621 RPS
-1 threads and 1000 connections - 23689 RPS
+1 threads and 1 connections - 736 RPS <br>
+1 threads and 10 connections - 5716 RPS <br>
+1 threads and 100 connections - 15621 RPS <br>
+1 threads and 1000 connections - 23689 RPS <br>
 Значительное повышение производительности происходит за счет того что процедура выходит из цикла при первом совпадении без перебора всего набора данных.
