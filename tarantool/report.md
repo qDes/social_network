@@ -45,3 +45,23 @@ wrk -t1 -c1 -d10s --timeout 10  --latency 'http://0.0.0.0:3000/account/search_us
 
 Значения rps отличаются на 2-3 порядка в сторону MySQL. Это связано с тем, что запросы вида LIKE в тарантуле реализуются через итерацию по большому количеству данных и сравнениюстрок и имеет низкую эффективность.
 Нагрузку такого характера бессмысленно переносить на тарантул.
+
+# UPD
+Сделаем вид что запрос может возвращать только 1 запись и немного изменим lua-процедуру
+```json
+function name_search(first, second)
+    local ret = {}
+    for _, tuple in box.space.users.index.secondary:pairs({second, first}, {iterator='GE'}) do
+        if (string.startswith(tuple[3], first, 1, -1) and string.startswith(tuple[4], second, 1, -1)) then
+            table.insert(ret, tuple)
+            return ret
+        end
+    end
+end
+```
+В этом случае данные нагрузочного тестирования
+1 threads and 1 connections - 736 RPS
+1 threads and 10 connections - 5716 RPS
+1 threads and 100 connections - 15621 RPS
+1 threads and 1000 connections - 23689 RPS
+Значительное повышение производительности происходит за счет того что процедура выходит из цикла при первом совпадении без перебора всего набора данных.
