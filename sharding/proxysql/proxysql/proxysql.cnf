@@ -80,14 +80,14 @@ mysql_query_rules:
 (
     {
         rule_id=1
-        active=0
+        active=1
         match_pattern="INSERT INTO customers \(country, name, city\) VALUES \('France'"
         destination_hostgroup=1
         apply=1
     },
     {
         rule_id=2
-        active=0
+        active=1
         match_pattern="country = 'France'"
         destination_hostgroup=1
         apply=1
