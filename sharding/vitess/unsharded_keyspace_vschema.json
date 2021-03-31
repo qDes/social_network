@@ -1,0 +1,26 @@
+{
+	"sharded": false,
+	"tables": {
+		"dinosaurs": {
+			"column_vindexes": [
+				{
+					"column": "id",
+					"name": "hash"
+				}
+			]
+		},
+		"eggs": {
+			"column_vindexes": [
+				{
+					"column": "id",
+					"name": "hash"
+				}
+			]
+		}
+	},
+	"vindexes": {
+		"hash": {
+			"type": "hash"
+		}
+	}
+}

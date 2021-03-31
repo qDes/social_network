@@ -1,0 +1,26 @@
+{
+	"sharded": true,
+	"tables": {
+		"messages": {
+			"column_vindexes": [
+				{
+					"column": "page",
+					"name": "hash"
+				}
+			]
+		},
+		"tokens": {
+			"column_vindexes": [
+				{
+					"column": "page",
+					"name": "hash"
+				}
+			]
+		}
+	},
+	"vindexes": {
+		"hash": {
+			"type": "hash"
+		}
+	}
+}
