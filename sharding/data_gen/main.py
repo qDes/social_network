@@ -18,20 +18,12 @@ if __name__ == "__main__":
             id_user_1 = random.randint(1,100)
             id_user_2 = random.randint(1,100)
             id_lady_gaga = 200
-            sql = "INSERT INTO messages (id, id_user_1, id_user_2, message) VALUES (uuid(), %s, %s, %s)"
-            cursor.execute(sql, (id_user_1, id_user_2, fake.text()))
+            sql = f"INSERT INTO messages (id, id_user_1, id_user_2, message) VALUES (uuid(), {id_user_1}, {id_user_2}, '{fake.text()}')"
+            sql1 = f"INSERT INTO messages (id, id_user_1, id_user_2, message) VALUES (uuid(), 200, {id_user_2}, '{fake.text()}')"
+            sql2 = f"INSERT INTO messages (id, id_user_1, id_user_2, message) VALUES (uuid(), {id_user_1}, 200, '{fake.text()}')"
+            cursor.execute(sql1)
             connection.commit()
-            #print(id_user_1, id_user_2, fake.text())
-            #print(id_lady_gaga, id_user_2, fake.text())
-'''
-    with connection.cursor() as cursor:
-        for i in range(n):
-            country = fake.country()
-            name = fake.name()
-            city = fake.city()
-
-            sql = "INSERT INTO customers (country, name, city) VALUES (%s, %s, %s)"
-            cursor.execute(sql, (country, name, city))
-            print(i)
+            cursor.execute(sql2)
             connection.commit()
-'''
+            cursor.execute(sql)
+            connection.commit()

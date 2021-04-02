@@ -50,7 +50,7 @@ mysql_servers =
     {
         address="db-node-3"
         port=3306
-        hostgroup=3
+        hostgroup=2
         max_connections=200
     }
 )
@@ -81,14 +81,28 @@ mysql_query_rules:
     {
         rule_id=1
         active=1
-        match_pattern="INSERT INTO customers \(country, name, city\) VALUES \('France'"
+        match_pattern="INSERT INTO messages \(id, id_user_1, id_user_2, message\) VALUES \(uuid.., 200"
         destination_hostgroup=1
         apply=1
     },
     {
         rule_id=2
         active=1
-        match_pattern="country = 'France'"
+        match_pattern="id_user_1 = 200"
+        destination_hostgroup=1
+        apply=1
+    },
+    {
+        rule_id=3
+        active=1
+        match_pattern="INSERT INTO messages \(id, id_user_1, id_user_2, message\) VALUES \(uuid.., \d*, 200"
+        destination_hostgroup=1
+        apply=1
+    },
+    {
+        rule_id=4
+        active=1
+        match_pattern="id_user_2 = 200"
         destination_hostgroup=1
         apply=1
     }

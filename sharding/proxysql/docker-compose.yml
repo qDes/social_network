@@ -50,27 +50,27 @@ services:
     volumes:
       - db-node-2-data:/var/lib/mysql
 
-  db-node-3:
-    build:
-      context: mysql
-      dockerfile: Dockerfile
-    container_name: db-node-3
-    restart: unless-stopped
-    environment:
-      MYSQL_DATABASE: test
-      MYSQL_USER: test
-      MYSQL_PASSWORD: pzjqUkMnc7vfNHET
-      MYSQL_ROOT_PASSWORD: '1'
-    command: >
-      --sql-mode='STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'
-      --general-log=ON
-      --log-queries-not-using-indexes=ON
-    networks:
-      - sn_net
-    ports:
-      - 3362:3306
-    volumes:
-      - db-node-3-data:/var/lib/mysql
+#  db-node-3:
+#    build:
+#      context: mysql
+#      dockerfile: Dockerfile
+#    container_name: db-node-3
+#    restart: unless-stopped
+#    environment:
+#      MYSQL_DATABASE: test
+#      MYSQL_USER: test
+#      MYSQL_PASSWORD: pzjqUkMnc7vfNHET
+#      MYSQL_ROOT_PASSWORD: '1'
+#    command: >
+#      --sql-mode='STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'
+#      --general-log=ON
+#      --log-queries-not-using-indexes=ON
+#    networks:
+#      - sn_net
+#    ports:
+#      - 3362:3306
+#    volumes:
+#      - db-node-3-data:/var/lib/mysql
 
   proxysql:
     build:
