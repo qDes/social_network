@@ -5,6 +5,36 @@ networks:
     driver: bridge
 
 services:
+
+  db-dialog:
+    image: postgres:11
+    container_name: dialog_db
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_DB=postgres
+    ports:
+      - 9118:5432
+    networks:
+      - sn_net
+
+  liquibase-pg:
+    build:
+      context: ./db-migrations/postgresql/
+    command: update
+    restart: on-failure
+    container_name: liquibase-pg
+    environment:
+      - LIQUIBASE_CHANGELOG=changelog.xml
+      - LIQUIBASE_URL=jdbc:postgresql://db-dialog:5432/postgres
+      - LIQUIBASE_USERNAME=user
+      - LIQUIBASE_PASSWORD=pass
+      - LIQUIBASE_OPTS=--defaultSchemaName=public --liquibaseSchemaName=public
+    depends_on:
+      - db-dialog
+    networks:
+      - sn_net
+
   db-master:
     image: mysql:5.7
     restart: always
@@ -27,13 +57,12 @@ services:
       - '3306:3306'
     expose:
       - '3306'
-
     networks:
       - sn_net
 
   liquibase:
     build:
-      context: ./db-migrations/
+      context: ./db-migrations/my-sql/
     command: update
     restart: on-failure
     container_name: liquibase

@@ -1,0 +1,26 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="2021-05-05-create-table-dialogs" author="Kozlov-A">
+        <createTable tableName="dialogs" tablespace="${tablespace_name}">
+            <column name="id" type="bigint"> <constraints nullable="false" primaryKey="true" primaryKeyName="source_domain_pkey"/></column>
+            <column name="id_user_1" type="bigint"> <constraints nullable="false"/></column>
+            <column name="id_user_2" type="bigint"> <constraints nullable="false"/></column>
+            <column name="message" type="varchar" defaultValueBoolean="false"> <constraints nullable="false"/></column>
+            <column name="dttm_inserted" type="timestamp" defaultValueComputed="now()"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2021-05-05-dialogs_table_id_addAutoIncrement" author="Kozlov-A">
+        <addAutoIncrement
+                columnDataType="bigint"
+                columnName="id"
+                incrementBy="1"
+                startWith="1"
+                tableName="dialogs"/>
+    </changeSet>
+
+</databaseChangeLog>
