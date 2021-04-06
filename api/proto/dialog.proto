@@ -24,7 +24,8 @@ message GetMessagesResponse {
 message Message {
   int64 id_user_1 = 1;
   int64 id_user_2 = 2;
-  string date = 3;
+  string message = 3;
+  string date = 4;
 }
 
 message WriteMessageRequest {

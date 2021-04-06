@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	dialog "social_network/api/proto"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -9,14 +10,16 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/streadway/amqp"
 	"github.com/tarantool/go-tarantool"
+	"google.golang.org/grpc"
 )
 
 type Service struct {
-	DB        *sqlx.DB
-	RDB       *redis.Client
-	Feed      *amqp.Channel
-	Q         amqp.Queue
-	Tarantool *tarantool.Connection
+	DB           *sqlx.DB
+	RDB          *redis.Client
+	Feed         *amqp.Channel
+	Q            amqp.Queue
+	Tarantool    *tarantool.Connection
+	DialogClient dialog.DialogServiceClient
 }
 
 func GetSvc() *Service {
@@ -76,11 +79,21 @@ func GetSvc() *Service {
 		Pass: "admin",
 	})
 
+	var opts []grpc.DialOption
+	opts = append(opts, grpc.WithBlock())
+	opts = append(opts, grpc.WithInsecure())
+	cn, err := grpc.Dial("0.0.0.0:11000", opts...)
+	if err != nil {
+		panic(err)
+	}
+	dialogClient := dialog.NewDialogServiceClient(cn)
+
 	return &Service{
-		DB:        db,
-		RDB:       rdb,
-		Feed:      ch,
-		Q:         q,
-		Tarantool: tarantool,
+		DB:           db,
+		RDB:          rdb,
+		Feed:         ch,
+		Q:            q,
+		Tarantool:    tarantool,
+		DialogClient: dialogClient,
 	}
 }

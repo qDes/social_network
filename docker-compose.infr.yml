@@ -68,19 +68,19 @@ services:
       - ./rabbit/rabbitmq-data:/var/lib/rabbitmq
       - ./rabbit/rabbitmq-logs:/var/log/rabbitmq
 
-  tarantool:
-    image: tarantool/tarantool:2.6.0
-    restart: on-failure
-    container_name: tarantool
-    volumes:
-      - ./tarantool:/usr/local/share/tarantool
-    command: tarantool /usr/local/share/tarantool/example.lua
-    ports:
-      - 3301:3301
-    depends_on:
-      - db-master
-    networks:
-      - sn_net
-    environment:
-      TARANTOOL_USER_NAME: admin
-      TARANTOOL_USER_PASSWORD: admin
+#  tarantool:
+#    image: tarantool/tarantool:2.6.0
+#    restart: on-failure
+#    container_name: tarantool
+#    volumes:
+#      - ./tarantool:/usr/local/share/tarantool
+#    command: tarantool /usr/local/share/tarantool/example.lua
+#    ports:
+#      - 3301:3301
+#    depends_on:
+#      - db-master
+#    networks:
+#      - sn_net
+#    environment:
+#      TARANTOOL_USER_NAME: admin
+#      TARANTOOL_USER_PASSWORD: admin
