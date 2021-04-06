@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	dialog "social_network/api/proto"
 	"social_network/internal/config"
 	"social_network/internal/model"
 	"strconv"
@@ -22,6 +23,28 @@ var (
 	store = sessions.NewCookieStore([]byte("mysession"))
 	svc   = config.GetSvc()
 )
+
+func WriteMessage(resp http.ResponseWriter, req *http.Request) {
+	ctx := context.Background()
+	svc.DialogClient.WriteMessage(ctx, &dialog.WriteMessageRequest{
+		IdUser_1: 5,
+		IdUser_2: 6,
+		Message:  "sasi pes",
+	})
+	fmt.Println("Write Message")
+}
+func GetMessages(resp http.ResponseWriter, req *http.Request) {
+	ctx := context.Background()
+	res, _ := svc.DialogClient.GetMessages(ctx, &dialog.GetMessagesRequest{
+		IdUser_1: 1,
+		IdUser_2: 2,
+		Limit:    1000,
+	})
+	for _, i := range res.Messages {
+		fmt.Println(i)
+	}
+}
+
 
 func Index(resp http.ResponseWriter, req *http.Request) {
 	session, _ := store.Get(req, "mysession")

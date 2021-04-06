@@ -37,7 +37,7 @@ func (s *dialogServer) GetMessages(ctx context.Context, req *dialog.GetMessagesR
 
 func (s *dialogServer) WriteMessage(ctx context.Context, req *dialog.WriteMessageRequest) (*emptypb.Empty, error) {
 	sqlQuery := `INSERT INTO dialogs (id_user_1, id_user_2, message) VALUES ($1, $2, $3);`
-	_, err := s.db.Query(sqlQuery, req.IdUser_2, req.IdUser_2, req.Message)
+	_, err := s.db.Query(sqlQuery, req.IdUser_1, req.IdUser_2, req.Message)
 	if err != nil {}
 	return &empty.Empty{}, nil
 }
