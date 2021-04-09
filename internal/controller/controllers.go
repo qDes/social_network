@@ -24,6 +24,80 @@ var (
 	svc   = config.GetSvc()
 )
 
+func Dialog(resp http.ResponseWriter, req *http.Request) {
+	// TODO: проверка сессии
+	/*
+	session, _ := store.Get(req, "mysession")
+		username := session.Values["username"]
+		if username != nil {
+			http.Redirect(resp, req, "/account/page/"+fmt.Sprintf("%v", username), http.StatusSeeOther)
+		}
+	 */
+	session, _ := store.Get(req, "mysession")
+	username := session.Values["username"]
+	fmt.Println(username)
+	// проверить что user в id_user_1/id_user_2
+
+	vars := mux.Vars(req)
+	idUser1, _ := strconv.Atoi(vars["id_user_1"])
+	idUser2, _ := strconv.Atoi(vars["id_user_2"])
+	fmt.Println(idUser2)
+	ctx := context.Background()
+	res, _ := svc.DialogClient.GetMessages(ctx, &dialog.GetMessagesRequest{
+		IdUser_1: int64(idUser1),
+		IdUser_2: int64(idUser2),
+		Limit:    100,
+	})
+	for _, i := range res.Messages {
+		fmt.Println(i)
+	}
+	data := map[string]interface{}{
+		"messages": res.Messages,
+	}
+
+	tmp, err := template.ParseFiles("web/template/dialog/dialog.html")
+	if err != nil {
+		fmt.Println(err)
+	}
+	tmp.Execute(resp, data)
+	/*
+
+		session, _ := store.Get(req, "mysession")
+		username := session.Values["username"]
+		if username != nil {
+			http.Redirect(resp, req, "/account/page/"+fmt.Sprintf("%v", username), http.StatusSeeOther)
+		}
+
+		data := map[string]interface{}{
+			"posts": feed.Posts,
+		}
+
+		tmp, _ := template.ParseFiles("web/template/feed/feed.html")
+		tmp.Execute(resp, data)
+
+	data := map[string]interface{}{
+		"user_id":      user.ID,
+		"username":     username,
+		"name":         user.FirstName,
+		"second_name":  user.SecondName,
+		"sex":          sex,
+		"city":         user.City,
+		"interests":    user.Interests,
+		"urls":         model.GetFriends(svc.DB, username),
+		"add":          add,
+		"add_post":     addPost,
+		"session_user": sessionUser,
+		"posts":        userPosts,
+	}
+	tmp, err := template.ParseFiles( "web/template/login/user.html")
+	if err != nil {
+		fmt.Println(err)
+	}
+	tmp.Execute(resp, data)
+
+	 */
+}
+
 func WriteMessage(resp http.ResponseWriter, req *http.Request) {
 	ctx := context.Background()
 	svc.DialogClient.WriteMessage(ctx, &dialog.WriteMessageRequest{
@@ -33,12 +107,13 @@ func WriteMessage(resp http.ResponseWriter, req *http.Request) {
 	})
 	fmt.Println("Write Message")
 }
+
 func GetMessages(resp http.ResponseWriter, req *http.Request) {
 	ctx := context.Background()
 	res, _ := svc.DialogClient.GetMessages(ctx, &dialog.GetMessagesRequest{
 		IdUser_1: 1,
 		IdUser_2: 2,
-		Limit:    1000,
+		Limit:    100,
 	})
 	for _, i := range res.Messages {
 		fmt.Println(i)

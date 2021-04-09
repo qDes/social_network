@@ -33,6 +33,7 @@ func main() {
 	r.HandleFunc("/account/feed", controller.UserFeed)
 	r.HandleFunc("/account/add_post", controller.AddUserPost)
 
+	r.HandleFunc("/account/dialog/{id_user_1}_{id_user_2}", controller.Dialog)
 	r.HandleFunc("/account/write_message", controller.WriteMessage)
 	r.HandleFunc("/account/get_messages", controller.GetMessages)
 

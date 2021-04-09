@@ -15,8 +15,8 @@ func (s *dialogServer) GetMessages(ctx context.Context, req *dialog.GetMessagesR
 		res              []*dialog.Message
 	)
 	sqlQuery := `SELECT id_user_1, id_user_2, message, dttm_inserted FROM dialogs 
-	WHERE (id_user_1=$1 AND id_user_2=$2) OR (id_user_1=$2 AND id_user_2=$1)  ORDER BY dttm_inserted;`
-	rows, err := s.db.Query(sqlQuery, req.IdUser_1, req.IdUser_2)
+	WHERE (id_user_1=$1 AND id_user_2=$2) OR (id_user_1=$2 AND id_user_2=$1)  ORDER BY dttm_inserted LIMIT $3;`
+	rows, err := s.db.Query(sqlQuery, req.IdUser_1, req.IdUser_2, req.Limit)
 	if err != nil {
 	}
 	defer rows.Close()
