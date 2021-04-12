@@ -53,13 +53,10 @@
         </form>
         {{end}}
 
-        {{if .dialog}}
-        <form action="/account/add_friend">
-            <input type="hidden" value="{{.username}}" name="username">
-            <input type="hidden" value="{{.session_user}}" name="user_session">
-            <input type="submit" value="Add" />
+        <form action="/account/dialog/{{.id_user_1}}_{{.id_user_2}}">
+            <input type="submit" value="Start Dialog" />
         </form>
-        {{end}}
+
 
         {{if .add_post}}
         <a href="/account/feed" class="btn btn-info" >Feed</a> <br><br>

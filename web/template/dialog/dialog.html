@@ -4,7 +4,7 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
 
         <title>
-            Feed
+            Dialog
         </title>
     </head>
     <body>
@@ -34,6 +34,12 @@
         Message: {{$element}}<br>
     {{end}}
 
+    <form action="/account/write_message">
+        <input type="hidden" value="{{.user_id}}" name="id_user_1">
+        <input type="hidden" value="{{.id_user_2}}" name="id_user_2">
+        <input type="text" value=" " name="message_text" width="40" size="50">>
+        <input type="submit" value="Send" />
+    </form>
 
     </body>
 

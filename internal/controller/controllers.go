@@ -27,12 +27,12 @@ var (
 func Dialog(resp http.ResponseWriter, req *http.Request) {
 	// TODO: проверка сессии
 	/*
-	session, _ := store.Get(req, "mysession")
-		username := session.Values["username"]
-		if username != nil {
-			http.Redirect(resp, req, "/account/page/"+fmt.Sprintf("%v", username), http.StatusSeeOther)
-		}
-	 */
+		session, _ := store.Get(req, "mysession")
+			username := session.Values["username"]
+			if username != nil {
+				http.Redirect(resp, req, "/account/page/"+fmt.Sprintf("%v", username), http.StatusSeeOther)
+			}
+	*/
 	session, _ := store.Get(req, "mysession")
 	username := session.Values["username"]
 	fmt.Println(username)
@@ -62,40 +62,40 @@ func Dialog(resp http.ResponseWriter, req *http.Request) {
 	tmp.Execute(resp, data)
 	/*
 
-		session, _ := store.Get(req, "mysession")
-		username := session.Values["username"]
-		if username != nil {
-			http.Redirect(resp, req, "/account/page/"+fmt.Sprintf("%v", username), http.StatusSeeOther)
-		}
+			session, _ := store.Get(req, "mysession")
+			username := session.Values["username"]
+			if username != nil {
+				http.Redirect(resp, req, "/account/page/"+fmt.Sprintf("%v", username), http.StatusSeeOther)
+			}
+
+			data := map[string]interface{}{
+				"posts": feed.Posts,
+			}
+
+			tmp, _ := template.ParseFiles("web/template/feed/feed.html")
+			tmp.Execute(resp, data)
 
 		data := map[string]interface{}{
-			"posts": feed.Posts,
+			"user_id":      user.ID,
+			"username":     username,
+			"name":         user.FirstName,
+			"second_name":  user.SecondName,
+			"sex":          sex,
+			"city":         user.City,
+			"interests":    user.Interests,
+			"urls":         model.GetFriends(svc.DB, username),
+			"add":          add,
+			"add_post":     addPost,
+			"session_user": sessionUser,
+			"posts":        userPosts,
 		}
-
-		tmp, _ := template.ParseFiles("web/template/feed/feed.html")
+		tmp, err := template.ParseFiles( "web/template/login/user.html")
+		if err != nil {
+			fmt.Println(err)
+		}
 		tmp.Execute(resp, data)
 
-	data := map[string]interface{}{
-		"user_id":      user.ID,
-		"username":     username,
-		"name":         user.FirstName,
-		"second_name":  user.SecondName,
-		"sex":          sex,
-		"city":         user.City,
-		"interests":    user.Interests,
-		"urls":         model.GetFriends(svc.DB, username),
-		"add":          add,
-		"add_post":     addPost,
-		"session_user": sessionUser,
-		"posts":        userPosts,
-	}
-	tmp, err := template.ParseFiles( "web/template/login/user.html")
-	if err != nil {
-		fmt.Println(err)
-	}
-	tmp.Execute(resp, data)
-
-	 */
+	*/
 }
 
 func WriteMessage(resp http.ResponseWriter, req *http.Request) {
@@ -119,7 +119,6 @@ func GetMessages(resp http.ResponseWriter, req *http.Request) {
 		fmt.Println(i)
 	}
 }
-
 
 func Index(resp http.ResponseWriter, req *http.Request) {
 	session, _ := store.Get(req, "mysession")
@@ -164,7 +163,6 @@ func Login(resp http.ResponseWriter, req *http.Request) {
 
 func UserFeed(resp http.ResponseWriter, req *http.Request) {
 	var feed model.Feed
-
 
 	session, _ := store.Get(req, "mysession")
 	sessionUser := session.Values["username"]
@@ -246,6 +244,8 @@ func UserPage(resp http.ResponseWriter, req *http.Request) {
 	}
 
 	user, _ := model.GetUser(svc.DB, fmt.Sprintf("%v", username))
+	userSession, _ := model.GetUser(svc.DB, fmt.Sprintf("%v",sessionUser))
+
 	if user.ID == 0 {
 		http.Redirect(resp, req, "/", http.StatusSeeOther)
 	}
@@ -268,6 +268,7 @@ func UserPage(resp http.ResponseWriter, req *http.Request) {
 		add = true
 	}
 
+	// TODO: CHECK id_user_1 id_user_2
 	data := map[string]interface{}{
 		"user_id":      user.ID,
 		"username":     username,
@@ -281,8 +282,10 @@ func UserPage(resp http.ResponseWriter, req *http.Request) {
 		"add_post":     addPost,
 		"session_user": sessionUser,
 		"posts":        userPosts,
+		"id_user_1":    userSession.ID,
+		"id_user_2":    user.ID,
 	}
-	tmp, err := template.ParseFiles( "web/template/login/user.html")
+	tmp, err := template.ParseFiles("web/template/login/user.html")
 	if err != nil {
 		fmt.Println(err)
 	}
