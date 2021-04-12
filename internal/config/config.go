@@ -31,8 +31,8 @@ func GetSvc() *Service {
 	dbUser := "user"     //"root"//
 	dbPass := "password" //"secret"
 
-	// db, err := sqlx.Open(dbDriver, dbUser+":"+dbPass+"@"+"(db:3306)"+"/"+dbName+"?parseTime=true")
-	db, err := sqlx.Open(dbDriver, dbUser+":"+dbPass+"@"+"(0.0.0.0:3306)"+"/"+dbName+"?parseTime=true")
+	db, err := sqlx.Open(dbDriver, dbUser+":"+dbPass+"@"+"(db-master:3306)"+"/"+dbName+"?parseTime=true")
+	//db, err := sqlx.Open(dbDriver, dbUser+":"+dbPass+"@"+"(0.0.0.0:3306)"+"/"+dbName+"?parseTime=true")
 	if err != nil {
 		fmt.Println(err)
 		fmt.Println("connecting to compose db")
@@ -52,7 +52,8 @@ func GetSvc() *Service {
 	db.SetConnMaxLifetime(time.Duration(time.Duration.Seconds(1)))
 
 	// connection to rabbitmq
-	conn, err := amqp.Dial("amqp://rabbit:rabbit@0.0.0.0:5672/")
+	// conn, err := amqp.Dial("amqp://rabbit:rabbit@0.0.0.0:5672/")
+	conn, err := amqp.Dial("amqp://rabbit:rabbit@rabbitmq:5672/")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -74,7 +75,9 @@ func GetSvc() *Service {
 		//DB:       6379,
 	})
 
-	tarantool, err := tarantool.Connect("127.0.0.1:3301", tarantool.Opts{
+	//tarantool, err := tarantool.Connect("127.0.0.1:3301", tarantool.Opts{
+
+	tarantool, err := tarantool.Connect("tarantool:3301", tarantool.Opts{
 		User: "admin",
 		Pass: "admin",
 	})
@@ -82,7 +85,9 @@ func GetSvc() *Service {
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithBlock())
 	opts = append(opts, grpc.WithInsecure())
-	cn, err := grpc.Dial("0.0.0.0:11000", opts...)
+
+	// cn, err := grpc.Dial("0.0.0.0:11000", opts...)
+	cn, err := grpc.Dial("dialog:11000", opts...)
 	if err != nil {
 		panic(err)
 	}

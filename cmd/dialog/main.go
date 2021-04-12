@@ -10,7 +10,9 @@ import (
 )
 
 func main() {
-	dbConn := "postgresql://user:pass@0.0.0.0:9118/postgres?sslmode=disable"
+	// dbConn := "postgresql://user:pass@0.0.0.0:9118/postgres?sslmode=disable"
+	dbConn := "postgresql://user:pass@db-dialog:5432/postgres?sslmode=disable"
+
 	port := "11000"
 
 	lis, err := net.Listen("tcp", "0.0.0.0:"+port)

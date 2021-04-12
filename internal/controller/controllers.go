@@ -36,12 +36,11 @@ func Dialog(resp http.ResponseWriter, req *http.Request) {
 	session, _ := store.Get(req, "mysession")
 	username := session.Values["username"]
 	fmt.Println(username)
-	// проверить что user в id_user_1/id_user_2
 
+	// проверить что user в id_user_1/id_user_2
 	vars := mux.Vars(req)
 	idUser1, _ := strconv.Atoi(vars["id_user_1"])
 	idUser2, _ := strconv.Atoi(vars["id_user_2"])
-	fmt.Println(idUser2)
 	ctx := context.Background()
 	res, _ := svc.DialogClient.GetMessages(ctx, &dialog.GetMessagesRequest{
 		IdUser_1: int64(idUser1),
@@ -52,7 +51,9 @@ func Dialog(resp http.ResponseWriter, req *http.Request) {
 		fmt.Println(i)
 	}
 	data := map[string]interface{}{
-		"messages": res.Messages,
+		"messages":  res.Messages,
+		"id_user_1": idUser1,
+		"id_user_2": idUser2,
 	}
 
 	tmp, err := template.ParseFiles("web/template/dialog/dialog.html")
@@ -60,52 +61,25 @@ func Dialog(resp http.ResponseWriter, req *http.Request) {
 		fmt.Println(err)
 	}
 	tmp.Execute(resp, data)
-	/*
 
-			session, _ := store.Get(req, "mysession")
-			username := session.Values["username"]
-			if username != nil {
-				http.Redirect(resp, req, "/account/page/"+fmt.Sprintf("%v", username), http.StatusSeeOther)
-			}
-
-			data := map[string]interface{}{
-				"posts": feed.Posts,
-			}
-
-			tmp, _ := template.ParseFiles("web/template/feed/feed.html")
-			tmp.Execute(resp, data)
-
-		data := map[string]interface{}{
-			"user_id":      user.ID,
-			"username":     username,
-			"name":         user.FirstName,
-			"second_name":  user.SecondName,
-			"sex":          sex,
-			"city":         user.City,
-			"interests":    user.Interests,
-			"urls":         model.GetFriends(svc.DB, username),
-			"add":          add,
-			"add_post":     addPost,
-			"session_user": sessionUser,
-			"posts":        userPosts,
-		}
-		tmp, err := template.ParseFiles( "web/template/login/user.html")
-		if err != nil {
-			fmt.Println(err)
-		}
-		tmp.Execute(resp, data)
-
-	*/
 }
 
 func WriteMessage(resp http.ResponseWriter, req *http.Request) {
+	req.ParseForm()
+	idUser1, _ := strconv.ParseInt(req.Form.Get("id_user_1"), 10, 64)
+	idUser2, _ := strconv.ParseInt(req.Form.Get("id_user_2"), 10, 64)
+	messageText := req.Form.Get("message_text")
+
 	ctx := context.Background()
+
 	svc.DialogClient.WriteMessage(ctx, &dialog.WriteMessageRequest{
-		IdUser_1: 5,
-		IdUser_2: 6,
-		Message:  "sasi pes",
+		IdUser_1: idUser1,
+		IdUser_2: idUser2,
+		Message:  messageText,
 	})
-	fmt.Println("Write Message")
+
+	http.Redirect(resp, req, req.Header.Get("Referer"), 302)
+
 }
 
 func GetMessages(resp http.ResponseWriter, req *http.Request) {
@@ -244,7 +218,7 @@ func UserPage(resp http.ResponseWriter, req *http.Request) {
 	}
 
 	user, _ := model.GetUser(svc.DB, fmt.Sprintf("%v", username))
-	userSession, _ := model.GetUser(svc.DB, fmt.Sprintf("%v",sessionUser))
+	userSession, _ := model.GetUser(svc.DB, fmt.Sprintf("%v", sessionUser))
 
 	if user.ID == 0 {
 		http.Redirect(resp, req, "/", http.StatusSeeOther)

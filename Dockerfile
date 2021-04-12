@@ -6,6 +6,8 @@ WORKDIR /go/src/app
 COPY . .
 RUN go mod download
 RUN GOOS=linux go build -ldflags="-s -w" -o ./bin/social ./cmd/social/main.go
+RUN GOOS=linux go build -ldflags="-s -w" -o ./bin/dialog ./cmd/dialog/main.go
+
 
 FROM alpine:latest
 RUN apk --no-cache add ca-certificates
@@ -13,4 +15,4 @@ WORKDIR /usr/bin
 COPY --from=build /go/src/app/bin /go/bin
 COPY --from=build /go/src/app/web web
 EXPOSE 3000
-ENTRYPOINT /go/bin/social
+#ENTRYPOINT /go/bin/social

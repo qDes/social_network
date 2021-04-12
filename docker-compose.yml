@@ -9,11 +9,52 @@ services:
   goservice:
     build: "."
     restart: on-failure
+    command: /bin/sh -c "sleep 60s && /go/bin/social"
     ports:
       - '3000:3000'
     depends_on:
       - "db-master"
       - "liquibase"
+    networks:
+      - sn_net
+
+  dialog:
+    build: "."
+    restart: on-failure
+    command: /bin/sh -c "/go/bin/dialog"
+    ports:
+      - '11000:11000'
+    depends_on:
+      - "db-dialog"
+    networks:
+      - sn_net
+
+  db-dialog:
+    image: postgres:11
+    container_name: dialog_db
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_DB=postgres
+    ports:
+      - 9118:5432
+    networks:
+      - sn_net
+
+  liquibase-pg:
+    build:
+      context: ./db-migrations/postgresql/
+    command: update
+    restart: on-failure
+    container_name: liquibase-pg
+    environment:
+      - LIQUIBASE_CHANGELOG=changelog.xml
+      - LIQUIBASE_URL=jdbc:postgresql://db-dialog:5432/postgres
+      - LIQUIBASE_USERNAME=user
+      - LIQUIBASE_PASSWORD=pass
+      - LIQUIBASE_OPTS=--defaultSchemaName=public --liquibaseSchemaName=public
+    depends_on:
+      - db-dialog
     networks:
       - sn_net
 
@@ -53,7 +94,7 @@ services:
 
   liquibase:
     build:
-      context: ./db-migrations/
+      context: ./db-migrations/my-sql/
     command: update
     restart: on-failure
     container_name: liquibase
@@ -94,3 +135,20 @@ services:
     volumes:
       - ./rabbit/rabbitmq-data:/var/lib/rabbitmq
       - ./rabbit/rabbitmq-logs:/var/log/rabbitmq
+
+  tarantool:
+    image: tarantool/tarantool:2.6.0
+    restart: on-failure
+    container_name: tarantool
+    volumes:
+      - ./tarantool:/usr/local/share/tarantool
+    command: tarantool /usr/local/share/tarantool/example.lua
+    ports:
+      - 3301:3301
+    depends_on:
+      - db-master
+    networks:
+      - sn_net
+    environment:
+      TARANTOOL_USER_NAME: admin
+      TARANTOOL_USER_PASSWORD: admin
