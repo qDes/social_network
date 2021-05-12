@@ -46,6 +46,7 @@ func Dialog(resp http.ResponseWriter, req *http.Request) {
 		IdUser_1: int64(idUser1),
 		IdUser_2: int64(idUser2),
 		Limit:    100,
+		Version: 1,
 	})
 	for _, i := range res.Messages {
 		fmt.Println(i)
@@ -76,6 +77,7 @@ func WriteMessage(resp http.ResponseWriter, req *http.Request) {
 		IdUser_1: idUser1,
 		IdUser_2: idUser2,
 		Message:  messageText,
+		Version: 1,
 	})
 
 	http.Redirect(resp, req, req.Header.Get("Referer"), 302)
@@ -88,6 +90,7 @@ func GetMessages(resp http.ResponseWriter, req *http.Request) {
 		IdUser_1: 1,
 		IdUser_2: 2,
 		Limit:    100,
+		Version: 1,
 	})
 	for _, i := range res.Messages {
 		fmt.Println(i)
