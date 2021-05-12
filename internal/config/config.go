@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-redis/redis/v8"
 	_ "github.com/go-sql-driver/mysql"
+	grpc_opentracing "github.com/grpc-ecosystem/go-grpc-middleware/tracing/opentracing"
 	"github.com/jmoiron/sqlx"
 	"github.com/streadway/amqp"
 	"github.com/tarantool/go-tarantool"
@@ -85,12 +86,14 @@ func GetSvc() *Service {
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithBlock())
 	opts = append(opts, grpc.WithInsecure())
+	opts = append(opts, grpc.WithUnaryInterceptor(grpc_opentracing.UnaryClientInterceptor()))
 
 	// cn, err := grpc.Dial("0.0.0.0:11000", opts...)
 	cn, err := grpc.Dial("dialog:11000", opts...)
 	if err != nil {
 		panic(err)
 	}
+
 	dialogClient := dialog.NewDialogServiceClient(cn)
 
 	return &Service{

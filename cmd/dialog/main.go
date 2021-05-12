@@ -6,6 +6,7 @@ import (
 	dialog "social_network/api/proto"
 	dialogServ "social_network/internal/app/dialog"
 
+	grpc_opentracing "github.com/grpc-ecosystem/go-grpc-middleware/tracing/opentracing"
 	"google.golang.org/grpc"
 )
 
@@ -20,8 +21,7 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	var opts []grpc.ServerOption
-	grpcServer := grpc.NewServer(opts...)
+	grpcServer := grpc.NewServer(grpc.UnaryInterceptor(grpc_opentracing.UnaryServerInterceptor()))
 
 	dialog.RegisterDialogServiceServer(grpcServer, dialogServ.NewServer(dbConn))
 	grpcServer.Serve(lis)
