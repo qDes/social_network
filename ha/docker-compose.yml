@@ -1,0 +1,58 @@
+version: '3.7'
+services:
+  haproxy:
+    image: haproxy:2.1.7
+    container_name: haproxy
+    restart: "no"
+    networks:
+      - ha
+    volumes:
+      - "./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg"
+    ports:
+      - "4080:80"
+      - "8404:8404"
+
+  db-node-1:
+    image: mysql:5.7
+    restart: 'no'
+    command:
+      - mysqld
+      - --max_connections=2500
+    environment:
+      MYSQL_DATABASE: 'db'
+      # So you don't have to use root, but you can if you like
+      MYSQL_USER: 'user'
+      # You can use whatever password you like
+      MYSQL_PASSWORD: 'password'
+      # Password for root access
+      MYSQL_ROOT_PASSWORD: 'password'
+    ports:
+      # <Port exposed> : < MySQL Port running inside container>
+      - '3306:3306'
+    networks:
+      - ha
+
+  db-node-2:
+    image: mysql:5.7
+    restart: 'no'
+    command:
+      - mysqld
+      - --max_connections=2500
+    environment:
+      MYSQL_DATABASE: 'db'
+      # So you don't have to use root, but you can if you like
+      MYSQL_USER: 'user'
+      # You can use whatever password you like
+      MYSQL_PASSWORD: 'password'
+      # Password for root access
+      MYSQL_ROOT_PASSWORD: 'password'
+    ports:
+      # <Port exposed> : < MySQL Port running inside container>
+      - '3307:3306'
+    networks:
+      - ha
+
+
+networks:
+  ha:
+    external: true
